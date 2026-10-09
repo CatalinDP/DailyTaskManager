@@ -1,0 +1,5 @@
+package com.example.dailytaskmanager.model
+
+enum class Day {
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+}

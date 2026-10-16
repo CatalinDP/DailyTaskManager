@@ -19,10 +19,10 @@ interface TaskDao {
     fun getAllTasksList(): List<Task>
 
     @Query("SELECT * FROM tasks WHERE id = :id")
-    suspend fun getTaskById(id: Int?): Task?
+    suspend fun getTaskById(id: Long?): Task?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTask(task: Task)
+    suspend fun insertTask(task: Task): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(tasks: List<Task>)

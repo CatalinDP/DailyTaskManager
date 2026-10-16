@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dailytaskmanager.navigation.AppNavigation
 import com.example.dailytaskmanager.ui.theme.DailyTaskManagerTheme
-import com.example.dailytaskmanager.views.StartView
+import com.example.dailytaskmanager.utils.getFormattedCurrentDate
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -34,7 +34,6 @@ import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

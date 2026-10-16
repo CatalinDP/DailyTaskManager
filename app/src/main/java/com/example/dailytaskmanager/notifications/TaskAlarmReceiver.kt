@@ -28,11 +28,11 @@ class TaskAlarmReceiver : BroadcastReceiver(), KoinComponent {
     private val taskDao: TaskDao by inject()
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        val taskId = intent?.getIntExtra("taskId", -1)
+        val taskId = intent?.getLongExtra("taskId", -1L)
         Log.d("NotifTest", "onReceive llamado, taskId=${intent?.getLongExtra("taskId", -1)}")
-        if (taskId == -1 || context == null) return
+        if (taskId == -1L || context == null) return
 
-        if (taskId == -2) {
+        if (taskId == -2L) {
             sendTestNotification(context)
             return
         }
@@ -63,7 +63,7 @@ class TaskAlarmReceiver : BroadcastReceiver(), KoinComponent {
         }
 
         val openApp = PendingIntent.getActivity(
-            context, task.id,
+            context, task.id.toInt(),
             Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -81,7 +81,7 @@ class TaskAlarmReceiver : BroadcastReceiver(), KoinComponent {
         ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < 33
         ) {
             try {
-                NotificationManagerCompat.from(context).notify(task.id, notification)
+                NotificationManagerCompat.from(context).notify(task.id.toInt(), notification)
             } catch (e: SecurityException) {
                 Log.e("NotifTest", "Sin permiso de notificaciones", e)
             }

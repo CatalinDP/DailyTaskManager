@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.example.dailytaskmanager.dao.TaskDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ class BootReceiver: BroadcastReceiver(), KoinComponent {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 taskDao.getAllTasksList().forEach { task ->
+                    Log.d("NotifTest", "Tarea encontrada: $task.name")
                     scheduler.schedule(task)
                 }
             } finally {

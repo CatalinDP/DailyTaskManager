@@ -17,54 +17,87 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = CoralPrimary,
-    onPrimary = White,
-    primaryContainer = SoftCoralContainer,
-    onPrimaryContainer = CoralPrimary,
+    primary = Indigo,
+    onPrimary = Color.White,
+    primaryContainer = IndigoContainer,
+    onPrimaryContainer = IndigoDeepText,
 
-    secondary = SageGreen,
-    onSecondary = White,
-    secondaryContainer = CardBeigeSurface,
-    onSecondaryContainer = CharcoalText,
+    secondary = SlateSecondary,
+    onSecondary = Color.White,
+    secondaryContainer = SlateContainer,
+    onSecondaryContainer = SlateDeepText,
 
-    background = CreamBackground,
-    onBackground = CharcoalText,
+    tertiary = Butter,
+    onTertiary = Color.White,
+    tertiaryContainer = ButterContainer,
+    onTertiaryContainer = ButterDeepText,
 
-    surface = CreamBackground,
-    onSurface = CharcoalText,
-    surfaceVariant = CardBeigeSurface,
-    onSurfaceVariant = WarmGrayText,
+    background = IvoryBackground,
+    onBackground = InkText,
 
-    outline = OutlineBorder,
-    outlineVariant = OutlineBorder.copy(alpha = 0.5f),
+    surface = IvoryBackground,
+    onSurface = InkText,
+    surfaceVariant = SurfaceContainerLight,
+    onSurfaceVariant = MutedText,
+    surfaceContainerLowest = SurfaceLowestLight,
+    surfaceContainerLow = SurfaceLowLight,
+    surfaceContainer = SurfaceContainerLight,
+    surfaceContainerHigh = SurfaceHighLight,
+    surfaceContainerHighest = SurfaceHighestLight,
+
+    inverseSurface = Color(0xFF303036),
+    inverseOnSurface = Color(0xFFF2F0F7),
+    inversePrimary = IndigoLight,
+
+    outline = OutlineLight,
+    outlineVariant = OutlineVariantLight,
 
     error = ErrorRed,
-    onError = White,
+    onError = Color.White,
     errorContainer = ErrorContainer,
     onErrorContainer = Color(0xFF410002)
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = CoralPrimary,
-    onPrimary = CharcoalText,
-    primaryContainer = DarkCoral,
-    onPrimaryContainer = SoftCoralContainer,
+    primary = IndigoLight,
+    onPrimary = OnIndigoLight,
+    primaryContainer = IndigoDarkContainer,
+    onPrimaryContainer = IndigoContainer,
 
-    secondary = SageGreen,
-    onSecondary = White,
-    secondaryContainer = CharcoalContainer,
-    onSecondaryContainer = CreamBackground,
+    secondary = SlateLight,
+    onSecondary = SlateDeepText,
+    secondaryContainer = SlateDarkContainer,
+    onSecondaryContainer = SlateContainer,
 
-    background = CharcoalSurface,
-    onBackground = CreamBackground,
+    tertiary = ButterLight,
+    onTertiary = ButterDeepText,
+    tertiaryContainer = ButterDarkContainer,
+    onTertiaryContainer = ButterContainer,
 
-    surface = CharcoalSurface,
-    onSurface = CreamBackground,
-    surfaceVariant = CharcoalContainer,
-    onSurfaceVariant = OutlineBorder,
+    background = NightBackground,
+    onBackground = NightText,
 
-    outline = WarmGrayText,
-    outlineVariant = CharcoalContainer
+    surface = NightBackground,
+    onSurface = NightText,
+    surfaceVariant = SurfaceHighDark,
+    onSurfaceVariant = NightMutedText,
+    surfaceContainerLowest = SurfaceLowestDark,
+    surfaceContainerLow = SurfaceLowDark,
+    surfaceContainer = SurfaceContainerDark,
+    surfaceContainerHigh = SurfaceHighDark,
+    surfaceContainerHighest = SurfaceHighestDark,
+
+    inverseSurface = NightText,
+    inverseOnSurface = Color(0xFF303036),
+    inversePrimary = Indigo,
+
+    outline = OutlineDark,
+    outlineVariant = OutlineVariantDark,
+
+    error = ErrorLight,
+    onError = Color(0xFF690005),
+    errorContainer = ErrorDarkContainer,
+    onErrorContainer = ErrorContainer
 )
 
 @Composable

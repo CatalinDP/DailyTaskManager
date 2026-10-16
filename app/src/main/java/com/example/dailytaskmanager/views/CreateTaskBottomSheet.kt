@@ -95,7 +95,6 @@ fun CreateTaskBottomSheet(
         dragHandle = { BottomSheetDefaults.DragHandle() },
         modifier = Modifier
             .imePadding()
-
     ) {
         Column(
             modifier = Modifier

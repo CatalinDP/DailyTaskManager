@@ -38,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.material3)
     val roomVersion = "2.8.5"
     val koinVersion = "4.2.2"
 

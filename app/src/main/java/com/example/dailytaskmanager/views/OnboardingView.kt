@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,7 +55,8 @@ fun OnboardingView(
 ) {
     val scrollState = rememberScrollState()
     var timeErrorState by remember { mutableStateOf(false) }
-    var timeErrorText by remember { mutableStateOf("")}
+    var timeErrorText by remember { mutableStateOf("") }
+    val nameEmptyError = stringResource(R.string.error_name_empty)
     val state by userViewModel.uiState.collectAsStateWithLifecycle()
     val startTimeState = rememberTimePickerState(initialHour = 8, initialMinute = 0, is24Hour = true)
 
@@ -69,7 +71,10 @@ fun OnboardingView(
                 ),
                 title = {
                     Text(
-                        text = "Daily Task Manager - ${getFormattedCurrentDate()}",
+                        text = stringResource(
+                            R.string.onboarding_title,
+                            getFormattedCurrentDate()
+                        ),
                         style = MaterialTheme.typography.titleSmall
                     )
                 }
@@ -98,33 +103,33 @@ fun OnboardingView(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.starter_icon),
-                        contentDescription = "Initial image for the app, a coffee and the sun behind",
+                        contentDescription = stringResource(R.string.onboarding_image_description),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(144.dp)
                             .padding(vertical = 8.dp)
                     )
                     Text(
-                        text = "Bienvenido a Daily Task Manager",
+                        text = stringResource(R.string.onboarding_welcome),
                         fontStyle = MaterialTheme.typography.labelSmall.fontStyle,
                         fontFamily = MaterialTheme.typography.labelSmall.fontFamily,
                         color = MaterialTheme.colorScheme.secondary
                     )
                 }
                 Text(
-                    text = "Tu día, con buen ritmo.",
+                    text = stringResource(R.string.onboarding_tagline),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "Organiza recordatorios sencillos, celebra tu progeso y deja espacio para lo importante",
+                    text = stringResource(R.string.onboarding_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Column {
                     TimeInputComponent(
                         startTimeState = startTimeState,
-                        startText = "¿A qué hora empieza tu día?",
+                        startText = stringResource(R.string.onboarding_start_time_question),
                     )
                     if (timeErrorState) {
                         Text(
@@ -140,14 +145,14 @@ fun OnboardingView(
                         .padding(vertical = 8.dp)
                 ) {
                     Text(
-                        text = "Introduce tu nombre",
+                        text = stringResource(R.string.onboarding_enter_name),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     OutlinedTextField(
                         value = state.name,
                         onValueChange = userViewModel::onNameChange,
-                        label = { Text("Nombre") },
+                        label = { Text(stringResource(R.string.onboarding_name_label)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
@@ -171,11 +176,13 @@ fun OnboardingView(
                 FilledTonalButton(
                     onClick = {
                         userViewModel.onStartingHourChange(LocalTime.of(startTimeState.hour, startTimeState.minute))
+                        timeErrorState = false
                         userViewModel.onSaveUserInfo(
                             onSave = {
                                 onNavigateToHome()
                             }, onError = {
-
+                                timeErrorState = true
+                                timeErrorText = nameEmptyError
                             }
                         )
                     },
@@ -187,7 +194,7 @@ fun OnboardingView(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Crear mi rutina",
+                        text = stringResource(R.string.onboarding_create_routine),
                         style = MaterialTheme.typography.labelLarge
                     )
                 }

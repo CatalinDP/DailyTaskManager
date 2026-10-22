@@ -1,3 +1,120 @@
-<resources>
-    <string name="app_name">DailyTaskManager</string>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
+    <string name="app_name">Daily Task Manager</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Task reminders</string>
+    <string name="notification_test_title">Test notification</string>
+    <string name="notification_test_text">If you see this, notifications are working</string>
+    <string name="notification_task_text">Time to start your task</string>
+
+    <!-- Navigation -->
+    <string name="navigation_home">Home</string>
+    <string name="navigation_tasks">Tasks</string>
+    <string name="navigation_settings">Settings</string>
+
+    <!-- Common -->
+    <string name="common_confirm">Confirm</string>
+    <string name="common_dismiss">Dismiss</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_accept">Accept</string>
+    <string name="common_enabled">Enabled</string>
+    <string name="common_disabled">Disabled</string>
+    <string name="common_back">Back</string>
+    <string name="common_open_settings">Open settings</string>
+    <string name="common_allow">Allow</string>
+    <string name="dialog_icon_description">Dialog icon</string>
+
+    <!-- Home -->
+    <string name="home_welcome">Welcome, %1$s</string>
+    <string name="home_upcoming_tasks">Upcoming tasks</string>
+    <string name="home_see_more">See more</string>
+    <string name="home_error">Error: %1$s</string>
+
+    <!-- Weather -->
+    <string name="weather_error_network">could not load weather</string>
+    <string name="weather_error_location_denied">location permission denied</string>
+    <string name="weather_today_forecast">Today\'s forecast</string>
+    <string name="weather_current_temperature" translatable="false">%1$sºC - </string>
+    <string name="weather_rain_probability">Chance of rain: %1$d%%</string>
+    <string name="weather_icon_description">Weather icon</string>
+
+    <!-- Tasks -->
+    <string name="tasks_add">Add task</string>
+    <string name="tasks_empty">No tasks created</string>
+    <string name="tasks_deleted">Task deleted</string>
+    <string name="tasks_undo">Undo</string>
+    <string name="task_delete_description">Delete task</string>
+    <string name="task_time_range">%1$s - %2$s</string>
+    <string name="task_completion_today_title">Your day today</string>
+    <plurals name="task_progress_count">
+        <item quantity="one">%1$d of %2$d completed</item>
+        <item quantity="other">%1$d of %2$d completed</item>
+    </plurals>
+    <string name="task_progress_message">You\'re doing great, almost there</string>
+    <string name="task_progress_percent">%1$d%%</string>
+
+    <!-- Create task -->
+    <string name="create_task_title">Create task</string>
+    <string name="create_task_name_title">Task name</string>
+    <string name="create_task_name_label">Task name</string>
+    <string name="create_task_start_time">Task start</string>
+    <string name="create_task_end_time">Task end</string>
+    <string name="create_task_repetition_days">Select days of the week</string>
+    <string name="create_task_select_time">Select time</string>
+    <string name="create_task_time_dialog_title">Select time</string>
+    <string name="create_task_create_button">Create task</string>
+    <string name="create_task_edit_button">Edit task</string>
+
+    <!-- Days -->
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_notifications_section">Notifications</string>
+    <string name="settings_notification_permission">Notification permission</string>
+    <string name="settings_location_section">Location</string>
+    <string name="settings_location_permission">Location permission</string>
+    <string name="settings_exact_alarms">Exact alarms</string>
+    <string name="settings_feedback_subject">Feedback about DailyTask</string>
+    <string name="settings_appearance_section">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_weather_section">Weather</string>
+    <string name="settings_show_weather_home">Show weather on home</string>
+    <string name="settings_units">Units</string>
+    <string name="settings_about_section">About</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+    <string name="settings_send_feedback">Send feedback</string>
+    <string name="settings_unit_dialog_title">Unit</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_version_value" translatable="false">0.5.1</string>
+    <string name="settings_open_setting_description">Open setting</string>
+    <string name="settings_lead_time" tools:ignore="UnusedResources">Notification lead time</string>
+    <string name="settings_lead_time_exact" tools:ignore="UnusedResources">Exact time</string>
+
+    <!-- Theme -->
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <!-- Temperature units -->
+    <string name="temp_unit_celsius" translatable="false">Cº</string>
+    <string name="temp_unit_fahrenheit" translatable="false">Fº</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Daily Task Manager - %1$s</string>
+    <string name="onboarding_image_description">App cover image with coffee and sun</string>
+    <string name="onboarding_welcome">Welcome to Daily Task Manager</string>
+    <string name="onboarding_tagline">Your day, at a good pace.</string>
+    <string name="onboarding_description">Organize simple reminders, celebrate your progress, and leave room for what matters</string>
+    <string name="onboarding_start_time_question">What time does your day start?</string>
+    <string name="onboarding_enter_name">Enter your name</string>
+    <string name="onboarding_name_label">Name</string>
+    <string name="onboarding_create_routine">Create my routine</string>
+    <string name="error_name_empty">Name cannot be empty</string>
 </resources>

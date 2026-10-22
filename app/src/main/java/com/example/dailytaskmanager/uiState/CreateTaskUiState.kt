@@ -10,10 +10,12 @@ import com.example.dailytaskmanager.model.Day
 import java.time.LocalTime
 
 data class CreateTaskUiState(
+    var taskId: Long = 0,
     var taskName: String = "",
-    var taskStartTime: LocalTime = LocalTime.of(12, 0),
-    var taskEndTime: LocalTime = LocalTime.of(14, 0),
-    var taskRepetitionDays: Set<Day> = emptySet()
+    var taskStartTime: LocalTime = LocalTime.of(8, 0),
+    var taskEndTime: LocalTime = LocalTime.of(10, 0),
+    var taskRepetitionDays: Set<Day> = emptySet(),
+    var isCompleted: Boolean = false
 ) {
     val canSave: Boolean get() = taskName.isNotBlank() && taskRepetitionDays.isNotEmpty()
 }

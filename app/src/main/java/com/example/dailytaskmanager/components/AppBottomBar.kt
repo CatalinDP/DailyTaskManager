@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
@@ -61,7 +62,7 @@ fun AppBottomBar(
 
                 BottomBarItem(
                     icon = dest.icon,
-                    label = dest.label,
+                    label = stringResource(dest.labelRes),
                     selected = selected,
                     onClick = { onNavigate(dest.route) }
                 )

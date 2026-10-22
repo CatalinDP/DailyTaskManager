@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.dailytaskmanager.dao.UserDao
 import com.example.dailytaskmanager.model.User
 import com.example.dailytaskmanager.uiState.UserInfoUiState
+import com.example.dailytaskmanager.uiState.UserInfoValidationError
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,11 +37,11 @@ class UserViewModel(private val userDao: UserDao): ViewModel() {
 
     fun onSaveUserInfo(
         onSave: () -> Unit,
-        onError: (String) -> Unit
+        onError: (UserInfoValidationError) -> Unit
     ) {
         val state = _uiState.value
         if (!state.canSave) {
-            onError("Name cannot be empty")
+            onError(UserInfoValidationError.NAME_EMPTY)
             return
         }
         viewModelScope.launch {

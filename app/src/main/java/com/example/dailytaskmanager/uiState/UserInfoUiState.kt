@@ -8,3 +8,7 @@ data class UserInfoUiState(
 ) {
     val canSave: Boolean get() = name.isNotBlank()
 }
+
+enum class UserInfoValidationError {
+    NAME_EMPTY
+}

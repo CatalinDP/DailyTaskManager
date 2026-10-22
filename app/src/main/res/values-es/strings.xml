@@ -1,0 +1,114 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="es">
+    <string name="app_name">Daily Task Manager</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Recordatorios de tareas</string>
+    <string name="notification_test_title">Notificación de prueba</string>
+    <string name="notification_test_text">Si ves esto, las notificaciones funcionan</string>
+    <string name="notification_task_text">Es hora de empezar tu tarea</string>
+
+    <!-- Navigation -->
+    <string name="navigation_home">Inicio</string>
+    <string name="navigation_tasks">Tareas</string>
+    <string name="navigation_settings">Ajustes</string>
+
+    <!-- Common -->
+    <string name="common_confirm">Confirmar</string>
+    <string name="common_dismiss">Descartar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_accept">Aceptar</string>
+    <string name="common_enabled">Activado</string>
+    <string name="common_disabled">Desactivado</string>
+    <string name="common_back">Volver</string>
+    <string name="common_open_settings">Abrir ajustes</string>
+    <string name="common_allow">Permitir</string>
+    <string name="dialog_icon_description">Icono del diálogo</string>
+
+    <!-- Home -->
+    <string name="home_welcome">Bienvenido, %1$s</string>
+    <string name="home_upcoming_tasks">Próximas tareas</string>
+    <string name="home_see_more">Ver más</string>
+    <string name="home_error">Error: %1$s</string>
+
+    <!-- Weather -->
+    <string name="weather_error_network">no se pudo cargar el tiempo</string>
+    <string name="weather_error_location_denied">permiso de ubicación denegado</string>
+    <string name="weather_today_forecast">Pronóstico de hoy</string>
+    <string name="weather_rain_probability">Probabilidad de lluvia: %1$d%%</string>
+    <string name="weather_icon_description">Icono del tiempo</string>
+
+    <!-- Tasks -->
+    <string name="tasks_add">Añadir tarea</string>
+    <string name="tasks_empty">No hay tareas creadas</string>
+    <string name="tasks_deleted">Tarea eliminada</string>
+    <string name="tasks_undo">Deshacer</string>
+    <string name="task_delete_description">Borrar tarea</string>
+    <string name="task_time_range">%1$s - %2$s</string>
+    <string name="task_completion_today_title">Tu día de hoy</string>
+    <plurals name="task_progress_count">
+        <item quantity="one">%1$d de %2$d completada</item>
+        <item quantity="other">%1$d de %2$d completadas</item>
+    </plurals>
+    <string name="task_progress_message">Vas muy bien, ya queda poco</string>
+    <string name="task_progress_percent">%1$d%%</string>
+
+    <!-- Create task -->
+    <string name="create_task_title">Creación de tarea</string>
+    <string name="create_task_name_title">Nombre de la tarea</string>
+    <string name="create_task_name_label">Nombre de tarea</string>
+    <string name="create_task_start_time">Inicio de tarea</string>
+    <string name="create_task_end_time">Fin de tarea</string>
+    <string name="create_task_repetition_days">Selecciona días de la semana</string>
+    <string name="create_task_select_time">Seleccionar hora</string>
+    <string name="create_task_time_dialog_title">Selecciona la hora</string>
+    <string name="create_task_create_button">Crear tarea</string>
+    <string name="create_task_edit_button">Editar tarea</string>
+
+    <!-- Days -->
+    <string name="day_monday">Lunes</string>
+    <string name="day_tuesday">Martes</string>
+    <string name="day_wednesday">Miércoles</string>
+    <string name="day_thursday">Jueves</string>
+    <string name="day_friday">Viernes</string>
+    <string name="day_saturday">Sábado</string>
+    <string name="day_sunday">Domingo</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_notifications_section">Notificaciones</string>
+    <string name="settings_notification_permission">Permiso de notificaciones</string>
+    <string name="settings_location_section">Localización</string>
+    <string name="settings_location_permission">Permiso de localización</string>
+    <string name="settings_exact_alarms">Alarmas exactas</string>
+    <string name="settings_feedback_subject">Comentarios sobre DailyTask</string>
+    <string name="settings_appearance_section">Apariencia</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_weather_section">Tiempo</string>
+    <string name="settings_show_weather_home">Mostrar tiempo al inicio</string>
+    <string name="settings_units">Unidades</string>
+    <string name="settings_about_section">Acerca de</string>
+    <string name="settings_privacy_policy">Política de privacidad</string>
+    <string name="settings_send_feedback">Enviar comentarios</string>
+    <string name="settings_unit_dialog_title">Unidad</string>
+    <string name="settings_version">Versión</string>
+    <string name="settings_open_setting_description">Abrir ajuste</string>
+    <string name="settings_lead_time" tools:ignore="UnusedResources">Antelación de aviso</string>
+    <string name="settings_lead_time_exact" tools:ignore="UnusedResources">Hora exacta</string>
+
+    <!-- Theme -->
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Daily Task Manager - %1$s</string>
+    <string name="onboarding_image_description">Imagen de portada de la app con un café y el sol de fondo</string>
+    <string name="onboarding_welcome">Bienvenido a Daily Task Manager</string>
+    <string name="onboarding_tagline">Tu día, con buen ritmo.</string>
+    <string name="onboarding_description">Organiza recordatorios sencillos, celebra tu progreso y deja espacio para lo importante</string>
+    <string name="onboarding_start_time_question">¿A qué hora empieza tu día?</string>
+    <string name="onboarding_enter_name">Introduce tu nombre</string>
+    <string name="onboarding_name_label">Nombre</string>
+    <string name="onboarding_create_routine">Crear mi rutina</string>
+    <string name="error_name_empty">El nombre no puede estar vacío</string>
+</resources>

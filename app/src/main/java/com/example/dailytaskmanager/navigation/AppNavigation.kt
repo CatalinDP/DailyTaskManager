@@ -15,9 +15,13 @@ import com.example.dailytaskmanager.viewmodel.UserViewModel
 import com.example.dailytaskmanager.views.TaskView
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.dailytaskmanager.components.AppBottomBar
+import com.example.dailytaskmanager.viewmodel.SettingsViewModel
+import com.example.dailytaskmanager.views.HomeView
 import com.example.dailytaskmanager.views.OnboardingView
+import com.example.dailytaskmanager.views.SettingsView
 
 @Composable
 fun AppNavigation(
@@ -34,14 +38,14 @@ fun AppNavigation(
     Box() {
         NavHost(
             navController = navController,
-            startDestination = if (userFinishedOnboarding) TaskView else Onboarding,
+            startDestination = if (userFinishedOnboarding) HomeView else Onboarding,
             modifier = Modifier
                 .fillMaxSize()
         ) {
             composable<Onboarding> {
                 OnboardingView(
                     onNavigateToHome = {
-                        navController.navigate(TaskView)
+                        navController.navigateToTopLevel(TaskView)
                     }
                 )
             }
@@ -50,6 +54,15 @@ fun AppNavigation(
                 TaskView(
                     onBackButton = { navController.popBackStack() }
                 )
+            }
+
+            composable<HomeView> {
+                HomeView(
+                    onSeeMoreTasksTap = { navController.navigateToTopLevel(TaskView) }
+                )
+            }
+            composable<SettingsView> {
+                SettingsView()
             }
         }
         if (canShowBottomBar) {
@@ -67,5 +80,15 @@ fun AppNavigation(
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
+    }
+}
+
+fun NavController.navigateToTopLevel(route: Any) {
+    navigate(route) {
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
     }
 }

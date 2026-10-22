@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.util.Log
 import com.example.dailytaskmanager.dao.TaskDao
 import com.example.dailytaskmanager.model.Task
+import com.example.dailytaskmanager.model.TaskCompletion
 import com.example.dailytaskmanager.notifications.TaskAlarmScheduler
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 class TaskRepositoryImpl(
     private val dao: TaskDao,
@@ -50,6 +52,23 @@ class TaskRepositoryImpl(
     @SuppressLint("ScheduleExactAlarm")
     override fun scheduleReminder(task: Task) {
         scheduler.schedule(task)
+    }
+
+    override fun completedIds(date: LocalDate): Flow<List<Long>> {
+        return dao.completedIds(date)
+    }
+
+    override fun completionDates(
+        from: LocalDate,
+        to: LocalDate
+    ): Flow<List<LocalDate>> {
+        return dao.completionDates(from, to)
+    }
+
+    override suspend fun setCompleted(taskId: Long, date: LocalDate, done: Boolean) {
+        Log.d("COMPLETION", "setCompleted: $taskId, $date, $done")
+        if (done) dao.markDone(TaskCompletion(taskId, date))
+        else dao.unmarkDone(taskId, date)
     }
 
 }

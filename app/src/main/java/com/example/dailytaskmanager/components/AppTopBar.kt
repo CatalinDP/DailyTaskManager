@@ -14,14 +14,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.dailytaskmanager.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(
     modifier: Modifier = Modifier,
     title: String,
-    label: String,
+    label: String = "",
     onBackButton: (() -> Unit)? = null,
     actions: @Composable RowScope.()  -> Unit = {},
 ) {
@@ -44,7 +46,10 @@ fun AppTopBar(
         navigationIcon = {
             if (onBackButton != null) {
                 IconButton(onClick = onBackButton) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.common_back)
+                    )
                 }
             }
         },

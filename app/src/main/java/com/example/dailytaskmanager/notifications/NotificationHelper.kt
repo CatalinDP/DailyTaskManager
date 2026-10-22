@@ -66,8 +66,8 @@ fun sendTestNotification(context: Context) {
 
     val notification = NotificationCompat.Builder(context, DailyTaskApplication.CHANNEL_ID)
         .setSmallIcon(R.drawable.starter_icon)
-        .setContentTitle("Notificación de prueba")
-        .setContentText("Si ves esto, las notificaciones funcionan")
+        .setContentTitle(context.getString(R.string.notification_test_title))
+        .setContentText(context.getString(R.string.notification_test_text))
         .setContentIntent(openApp)
         .setAutoCancel(true)
         .setPriority(NotificationCompat.PRIORITY_HIGH)

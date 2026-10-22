@@ -21,7 +21,7 @@ class DailyTaskApplication : Application() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Recordatorios de tareas",
+            getString(R.string.notification_channel_name),
             NotificationManager.IMPORTANCE_HIGH
         )
         getSystemService<NotificationManager>()!!.createNotificationChannel(channel)

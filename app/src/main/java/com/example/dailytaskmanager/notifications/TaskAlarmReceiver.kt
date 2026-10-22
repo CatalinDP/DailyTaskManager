@@ -70,7 +70,7 @@ class TaskAlarmReceiver : BroadcastReceiver(), KoinComponent {
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.starter_icon)
             .setContentTitle(task.name)
-            .setContentText("Es hora de empezar tu tarea")
+            .setContentText(context.getString(R.string.notification_task_text))
             .setContentIntent(openApp)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

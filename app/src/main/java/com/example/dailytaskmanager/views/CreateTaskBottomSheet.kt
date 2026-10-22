@@ -1,6 +1,7 @@
 package com.example.dailytaskmanager.views
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -39,9 +40,11 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.components.TimeInputComponent
 import com.example.dailytaskmanager.model.Day
 import com.example.dailytaskmanager.model.Task
@@ -57,18 +60,28 @@ import java.time.LocalTime
 @Composable
 fun CreateTaskBottomSheet(
     onDismiss: () -> Unit,
+    task: Task? = null,
     viewModel: CreateTaskViewModel = koinViewModel()
     ) {
+    var allowFocus by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (task != null) {
+            viewModel.editTask(task)
+        }
+        withFrameNanos {  }
+        allowFocus = true
+    }
+
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val timePickerState = rememberTimePickerState(is24Hour = true)
-    val startTimeState = rememberTimePickerState(initialHour = 8, initialMinute = 0, is24Hour = true)
-    val endTimeState = rememberTimePickerState(initialHour = 10, initialMinute = 0, is24Hour = true)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    Log.d("COMPLETION", "${state.taskStartTime.hour}")
+    val startTimeState = rememberTimePickerState(initialHour = state.taskStartTime.hour, initialMinute = state.taskStartTime.minute, is24Hour = true)
+    val endTimeState = rememberTimePickerState(initialHour = state.taskEndTime.hour, initialMinute = state.taskEndTime.minute, is24Hour = true)
     val scrollState = rememberScrollState()
-
     var showTimeDialog by remember { mutableStateOf(false) }
-    var allowFocus by remember { mutableStateOf(false) }
 
     val closeSheet: (onFinished: () -> Unit) -> Unit = { onFinished ->
         scope.launch { sheetState.hide() }.invokeOnCompletion {
@@ -81,16 +94,21 @@ fun CreateTaskBottomSheet(
     val requestNotificationPermission = rememberNotificationpermissionRequester { _ ->
         viewModel.onEndTimeChange(LocalTime.of(endTimeState.hour, endTimeState.minute))
         viewModel.onStartTimeChange(LocalTime.of(startTimeState.hour, startTimeState.minute))
-        viewModel.saveTask(onSaved = onDismiss)
-    }
-
-    LaunchedEffect(Unit) {
-        withFrameNanos {  }
-        allowFocus = true
+        if (task == null) {
+            viewModel.saveTask(onSaved = onDismiss)
+            Log.d("COMPLETION", "SAVE")
+        } else {
+            viewModel.updateTask(onUpdated = { onDismiss()
+                Log.d("COMPLETION", "OnUpdate")})
+            Log.d("COMPLETION", "Edit")
+        }
     }
 
     ModalBottomSheet(
-        onDismissRequest = { closeSheet { onDismiss() } },
+        onDismissRequest = { closeSheet {
+            onDismiss()
+            viewModel.resetUiState()
+        } },
         sheetState = sheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
         modifier = Modifier
@@ -103,12 +121,12 @@ fun CreateTaskBottomSheet(
                 .focusProperties { canFocus = allowFocus }
         ) {
             Text(
-                text = "Creación de tarea",
+                text = stringResource(R.string.create_task_title),
                 style = MaterialTheme.typography.titleLarge
             )
             Column() {
                 Text(
-                    text = "Nombre de la tarea",
+                    text = stringResource(R.string.create_task_name_title),
                     modifier = Modifier
                         .imePadding()
                         .padding(vertical = 8.dp),
@@ -117,7 +135,7 @@ fun CreateTaskBottomSheet(
                 OutlinedTextField(
                     value = state.taskName,
                     onValueChange = viewModel::onNameChange,
-                    label = { Text("Nombre de tarea") },
+                    label = { Text(stringResource(R.string.create_task_name_label)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
@@ -146,13 +164,13 @@ fun CreateTaskBottomSheet(
                 TimeInputComponent(
                     startTimeState = startTimeState,
                     endTimeState = endTimeState,
-                    startText = "Inicio de tarea",
-                    endText = "Fin de tarea",
+                    startText = stringResource(R.string.create_task_start_time),
+                    endText = stringResource(R.string.create_task_end_time),
                     showEndTime = true
                 )
             }
             Column {
-                Text("Selecciona días de la semana")
+                Text(stringResource(R.string.create_task_repetition_days))
                 DayPicker(
                     selectedDays = state.taskRepetitionDays,
                     onSelectedDaysChange = viewModel::onDayToggled
@@ -163,24 +181,24 @@ fun CreateTaskBottomSheet(
                     showTimeDialog = true
                 }
             ) {
-                Text(text = "Select time")
+                Text(text = stringResource(R.string.create_task_select_time))
             }
 
             if (showTimeDialog) {
                 TimePickerDialog(
                     onDismissRequest = { showTimeDialog = false },
-                    title = { Text("Selecciona la hora") },
+                    title = { Text(stringResource(R.string.create_task_time_dialog_title)) },
                     confirmButton = {
                         TextButton(onClick = {
                             // Acceder a timePickerState.hour y timePickerState.minute
                             showTimeDialog = false
                         }) {
-                            Text("Aceptar")
+                            Text(stringResource(R.string.common_accept))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showTimeDialog = false }) {
-                            Text("Cancelar")
+                            Text(stringResource(R.string.common_cancel))
                         }
                     }
                 ) {
@@ -195,7 +213,7 @@ fun CreateTaskBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(text = "Create task")
+                Text(text = if (task == null) stringResource(R.string.create_task_create_button) else stringResource(R.string.create_task_edit_button))
             }
 
         }

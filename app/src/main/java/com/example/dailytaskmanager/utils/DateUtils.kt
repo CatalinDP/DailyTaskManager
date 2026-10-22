@@ -1,23 +1,30 @@
 package com.example.dailytaskmanager.utils
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.text.format.DateFormat
 import com.example.dailytaskmanager.model.Day
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
 import java.util.Locale
 
-private val today = LocalDate.now()
-private val localeEs = Locale.forLanguageTag("es-ES")
-private val formatter = DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", localeEs)
-
 fun getFormattedCurrentDate(): String {
+    val locale = Locale.getDefault()
+    val pattern = DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM")
+    val formatter = DateTimeFormatter.ofPattern(pattern, locale)
 
-    return today.format(formatter)
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    return LocalDate.now().format(formatter)
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
+}
+
+fun getFormattedSelectedDate(): String {
+    val locale = Locale.getDefault()
+    val pattern = DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM")
+    val formatter = DateTimeFormatter.ofPattern(pattern, locale)
+
+    return LocalDate.now().format(formatter)
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
 }
 
 fun getCurrentDayName(): Day {
     return Day.valueOf(LocalDate.now().dayOfWeek.name)
 }
+

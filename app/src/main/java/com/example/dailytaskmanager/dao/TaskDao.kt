@@ -7,7 +7,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.dailytaskmanager.model.Task
+import com.example.dailytaskmanager.model.TaskCompletion
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface TaskDao {
@@ -32,4 +34,16 @@ interface TaskDao {
 
     @Delete
     suspend fun deleteTask(task: Task)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun markDone(completion: TaskCompletion)
+
+    @Query("DELETE FROM task_completion WHERE taskId = :taskId AND date = :date")
+    suspend fun unmarkDone(taskId: Long, date: LocalDate)
+
+    @Query("SELECT taskId FROM task_completion WHERE date = :date")
+    fun completedIds(date: LocalDate): Flow<List<Long>>
+
+    @Query("SELECT date FROM task_completion WHERE date BETWEEN :from AND :to")
+    fun completionDates(from: LocalDate, to: LocalDate): Flow<List<LocalDate>>
 }

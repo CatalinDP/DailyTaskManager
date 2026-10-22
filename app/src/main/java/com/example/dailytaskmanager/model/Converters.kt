@@ -3,6 +3,7 @@ package com.example.dailytaskmanager.model
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.TypeConverter
+import java.time.LocalDate
 import java.time.LocalTime
 
 class Converters {
@@ -11,7 +12,6 @@ class Converters {
         return time.toString();
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @TypeConverter
     fun toLocalTime(time: String?): LocalTime? {
         return time?.let { LocalTime.parse(it) }
@@ -30,4 +30,10 @@ class Converters {
             runCatching { Day.valueOf(name) }.getOrNull()
         }
     }
+
+    @TypeConverter
+    fun fromDate(date: LocalDate): String = date.toString()
+
+    @TypeConverter
+    fun toDate(value: String): LocalDate = LocalDate.parse(value)
 }

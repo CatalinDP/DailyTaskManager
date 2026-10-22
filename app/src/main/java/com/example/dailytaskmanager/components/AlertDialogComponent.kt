@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.example.dailytaskmanager.R
 
 @Composable
 fun AlertDialogComponent(
@@ -25,7 +27,7 @@ fun AlertDialogComponent(
                 Icon(
                     //TODO: Make it receive an icon for reusability
                     imageVector = Icons.Outlined.Remove,
-                    contentDescription = "item dialog icon",
+                    contentDescription = stringResource(R.string.dialog_icon_description),
                     tint = MaterialTheme.colorScheme.error
                 )
             },
@@ -51,7 +53,7 @@ fun AlertDialogComponent(
                     )
                 ) {
                    Text(
-                       text = "Confirm"
+                       text = stringResource(R.string.common_confirm)
                    )
                 }
             },
@@ -60,7 +62,7 @@ fun AlertDialogComponent(
                     onClick = onDismiss
                 ) {
                     Text(
-                        text = "Dismiss"
+                        text = stringResource(R.string.common_dismiss)
                     )
                 }
             }

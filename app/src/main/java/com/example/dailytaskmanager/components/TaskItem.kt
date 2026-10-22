@@ -1,5 +1,6 @@
 package com.example.dailytaskmanager.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,18 +26,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.model.Task
 
 @Composable
 fun TaskItem(
     task: Task,
+    isCompleted: Boolean,
+    onTaskChecked: (Task, Boolean) -> Unit = { _, _ -> },
+    onTap: (Task) -> Unit
 ) {
-    var isChecked by remember { mutableStateOf(task.isCompleted) }
+    var isChecked by remember { mutableStateOf(isCompleted) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp),
+            .height(64.dp)
+            .clickable(onClick = { onTap(task) } ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onSecondary),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -50,7 +57,10 @@ fun TaskItem(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = isChecked,
-                    onCheckedChange = { isChecked = it },
+                    onCheckedChange = {
+                        isChecked = it
+                        onTaskChecked(task, it)
+                                      },
                     modifier = Modifier
                         .padding(horizontal = 12.dp),
                     colors = CheckboxDefaults.colors(
@@ -69,7 +79,11 @@ fun TaskItem(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "${task.startingTime.toString()} - ${task.endingTime.toString()}",
+                            text = stringResource(
+                                R.string.task_time_range,
+                                task.startingTime.toString(),
+                                task.endingTime.toString()
+                            ),
                             style = MaterialTheme.typography.labelMedium,
                         )
                     }

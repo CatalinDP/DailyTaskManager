@@ -1,6 +1,7 @@
 package com.example.dailytaskmanager.notifications
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -42,7 +43,35 @@ class TaskAlarmScheduler(private val context: Context) {
         }
     }
 
-    fun cancel(taskId: Long) = alarmManager.cancel(pendingIntent(taskId))
+    fun cancel(taskId: Long) {
+        alarmManager.cancel(pendingIntent(taskId))
+        alarmManager.cancel(snoozeIntent(taskId))
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    fun scheduleSnooze(taskId: Long, minutes: Long) {
+        val millis = System.currentTimeMillis() + minutes * 60_000
+        val pi = snoozeIntent(taskId)
+        val canBeExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                alarmManager.canScheduleExactAlarms()
+        try {
+            if (canBeExact) alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
+            else alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
+        } catch (e: SecurityException) {
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
+        }
+    }
+
+    private fun snoozeIntent(taskId: Long): PendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            (taskId.toString() + ACTION_SHOW).hashCode(),
+            Intent(context, NotificationActionReceiver::class.java).apply {
+                action = ACTION_SHOW
+                putExtra(EXTRA_TASK_ID, taskId)
+            },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
     private fun pendingIntent(taskId: Long): PendingIntent {
         Log.d("NotifTest", "TaskId: $taskId")

@@ -180,8 +180,10 @@ fun TaskView(
                                 onTap = {
                                     taskTapped = it
                                     showBottomSheet = true
-                                }
+                                },
+                                isToday = selectedDay.value == getCurrentDayName()
                                 )
+
                         }
                     }
                 }

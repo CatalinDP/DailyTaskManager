@@ -15,8 +15,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoGraph
+import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,10 +50,14 @@ import com.example.dailytaskmanager.components.TaskItem
 import com.example.dailytaskmanager.components.WeatherComponent
 import com.example.dailytaskmanager.components.WeatherSkeleton
 import com.example.dailytaskmanager.R
+import com.example.dailytaskmanager.components.SuggestionBox
+import com.example.dailytaskmanager.components.WeeklyStatView
 import com.example.dailytaskmanager.model.Task
 import com.example.dailytaskmanager.model.WeatherState
 import com.example.dailytaskmanager.navigation.TaskView
 import com.example.dailytaskmanager.ui.messageRes
+import com.example.dailytaskmanager.utils.getCurrentDayName
+import com.example.dailytaskmanager.utils.getCurrentDayNumber
 import com.example.dailytaskmanager.utils.getFormattedCurrentDate
 import com.example.dailytaskmanager.viewmodel.HomeViewModel
 import com.example.dailytaskmanager.viewmodel.SettingsViewModel
@@ -103,18 +111,23 @@ fun HomeView(
     val tempUnit = settingsViewModel.unit.collectAsStateWithLifecycle()
     var showBottomSheet: Boolean by remember { mutableStateOf(false) }
     var taskTapped: Task? by remember { mutableStateOf(null) }
+    val todayDay = taskViewModel.selectedDay.collectAsStateWithLifecycle()
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) fetchLocation() else homeViewModel.onLocationDenied()
     }
+    val weekProgression = taskViewModel.weekProgression.collectAsStateWithLifecycle()
+    val streak = taskViewModel.dayStreak.collectAsStateWithLifecycle()
+
+    val streakText = if (streak.value > 1)"¡Llevas una racha de ${streak.value} días! Sigue así" else "Empieza hoy tu viaje, completa un 20% de las tareas y aumenta tu racha"
 
     LaunchedEffect(showWeather.value) {
         if (!showWeather.value) return@LaunchedEffect
         permissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
     }
 
-
+    val scrollState = rememberScrollState()
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -126,15 +139,28 @@ fun HomeView(
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(PaddingValues(
-                top = innerPadding.calculateTopPadding(),
-                bottom = 124.dp,
-                start = 24.dp,
-                end = 24.dp
-            )),
+            modifier = Modifier
+                .padding(
+                    PaddingValues(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = 124.dp,
+                        start = 24.dp,
+                        end = 24.dp
+                    )
+                )
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             TaskCompletionStat()
+            WeeklyStatView(
+                values = weekProgression.value,
+                labels = listOf("L", "M", "X", "J", "V", "S", "D"),
+                highlightedIndex = getCurrentDayNumber(),
+            )
+            SuggestionBox(
+                streakText,
+                icon = Icons.Outlined.LocalFireDepartment
+            )
             if (showWeather.value) {
                 when (val state = weather) {
                     WeatherState.Loading -> WeatherSkeleton()
@@ -175,7 +201,8 @@ fun HomeView(
                     onTap = {
                         taskTapped = it
                         showBottomSheet = true
-                    }
+                    },
+                    isToday = todayDay.value == getCurrentDayName()
                 )
             }
             if (showBottomSheet) {

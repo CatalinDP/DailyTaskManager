@@ -12,7 +12,7 @@ import com.example.dailytaskmanager.dao.UserDao
 import com.example.dailytaskmanager.model.TaskCompletion
 import com.example.dailytaskmanager.model.User
 
-@Database(entities = [ Task::class, User::class, TaskCompletion::class], version = 6, exportSchema = false)
+@Database(entities = [ Task::class, User::class, TaskCompletion::class], version = 7, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun taskDao(): TaskDao

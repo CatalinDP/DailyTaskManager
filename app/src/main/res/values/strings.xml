@@ -6,6 +6,11 @@
     <string name="notification_test_title">Test notification</string>
     <string name="notification_test_text">If you see this, notifications are working</string>
     <string name="notification_task_text">Time to start your task</string>
+    <string name="notification_until">Until %1$s</string>
+    <string name="action_complete">Complete</string>
+    <string name="action_snooze">Postpone 10 min</string>
+    <string name="channel_ongoing_name">On going task</string>
+
 
     <!-- Navigation -->
     <string name="navigation_home">Home</string>

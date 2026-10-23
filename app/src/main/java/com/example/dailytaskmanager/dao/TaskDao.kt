@@ -44,6 +44,12 @@ interface TaskDao {
     @Query("SELECT taskId FROM task_completion WHERE date = :date")
     fun completedIds(date: LocalDate): Flow<List<Long>>
 
-    @Query("SELECT date FROM task_completion WHERE date BETWEEN :from AND :to")
-    fun completionDates(from: LocalDate, to: LocalDate): Flow<List<LocalDate>>
+    @Query("SELECT * FROM task_completion WHERE date BETWEEN :from AND :to")
+    fun completionDates(from: LocalDate, to: LocalDate): Flow<List<TaskCompletion>>
+
+    @Query("SELECT * FROM task_completion")
+    fun allCompletions(): Flow<List<TaskCompletion>>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM task_completion WHERE taskId = :taskId AND date = :date)")
+    suspend fun isCompleted(taskId: Long, date: LocalDate): Boolean
 }

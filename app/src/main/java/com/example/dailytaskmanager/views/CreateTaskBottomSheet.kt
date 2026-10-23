@@ -1,14 +1,7 @@
 package com.example.dailytaskmanager.views
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -26,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -41,17 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.components.TimeInputComponent
-import com.example.dailytaskmanager.model.Day
 import com.example.dailytaskmanager.model.Task
 import com.example.dailytaskmanager.notifications.rememberNotificationpermissionRequester
-import com.example.dailytaskmanager.ui.theme.DailyTaskManagerTheme
 import com.example.dailytaskmanager.viewmodel.CreateTaskViewModel
-import com.example.dailytaskmanager.viewmodel.TaskViewModel
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.LocalTime
@@ -124,7 +112,7 @@ fun CreateTaskBottomSheet(
                 text = stringResource(R.string.create_task_title),
                 style = MaterialTheme.typography.titleLarge
             )
-            Column() {
+            Column {
                 Text(
                     text = stringResource(R.string.create_task_name_title),
                     modifier = Modifier

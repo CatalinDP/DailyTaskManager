@@ -2,6 +2,7 @@ package com.example.dailytaskmanager
 
 import com.example.dailytaskmanager.database.AppDatabase
 import com.example.dailytaskmanager.notifications.TaskAlarmScheduler
+import com.example.dailytaskmanager.notifications.TaskNotifier
 import com.example.dailytaskmanager.repository.SettingsRepository
 import com.example.dailytaskmanager.repository.SettingsRepositoryImpl
 import com.example.dailytaskmanager.repository.TaskRepository
@@ -44,6 +45,7 @@ val appModule = module {
     single<TaskRepository> { TaskRepositoryImpl(get(), get()) }
     single { get<TaskRepository>() as TaskRepositoryImpl }
     single { SettingsRepositoryImpl(androidContext()) }
+    single { TaskNotifier(androidContext()) }
 
     viewModel { SettingsViewModel(get()) }
     viewModel { TaskViewModel(get()) }

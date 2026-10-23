@@ -15,16 +15,11 @@ fun getFormattedCurrentDate(): String {
         .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
 }
 
-fun getFormattedSelectedDate(): String {
-    val locale = Locale.getDefault()
-    val pattern = DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM")
-    val formatter = DateTimeFormatter.ofPattern(pattern, locale)
-
-    return LocalDate.now().format(formatter)
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
-}
-
 fun getCurrentDayName(): Day {
     return Day.valueOf(LocalDate.now().dayOfWeek.name)
+}
+
+fun getCurrentDayNumber(): Int {
+    return LocalDate.now().dayOfWeek.value - 1
 }
 

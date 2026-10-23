@@ -17,15 +17,18 @@ import com.example.dailytaskmanager.MainActivity
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.dao.TaskDao
 import com.example.dailytaskmanager.model.Task
+import com.example.dailytaskmanager.repository.TaskRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.time.LocalDate
 
 class TaskAlarmReceiver : BroadcastReceiver(), KoinComponent {
     private val scheduler: TaskAlarmScheduler by inject()
-    private val taskDao: TaskDao by inject()
+    private val repository: TaskRepository by inject()
+    private val notifier: TaskNotifier by inject()
 
     override fun onReceive(context: Context?, intent: Intent?) {
         val taskId = intent?.getLongExtra("taskId", -1L)
@@ -40,50 +43,14 @@ class TaskAlarmReceiver : BroadcastReceiver(), KoinComponent {
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val task = taskDao.getTaskById(taskId) ?: return@launch
-                Log.d("NotifTest", "tarea encontrada: $task")
-                showNotification(context, task)
+                val task = repository.getTaskById(taskId!!) ?: return@launch
+                val doneToday = repository.isCompleted(taskId, LocalDate.now())
+                if (!doneToday) notifier.show(task, silent = false)
                 scheduler.schedule(task)
             } catch(e: SecurityException) {
                 Log.e("NotifTest", "Error en receiver", e)
             } finally {
                 pending.finish()
-            }
-        }
-    }
-
-
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private fun showNotification(context: Context?, task: Task) {
-        if (context == null) return
-        val manager = NotificationManagerCompat.from(context)
-        if (!manager.areNotificationsEnabled()) {
-            Log.w("NotifTest", "Notificaciones desactivadas")
-            return
-        }
-
-        val openApp = PendingIntent.getActivity(
-            context, task.id.toInt(),
-            Intent(context, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.starter_icon)
-            .setContentTitle(task.name)
-            .setContentText(context.getString(R.string.notification_task_text))
-            .setContentIntent(openApp)
-            .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .build()
-
-        if (ActivityCompat.checkSelfPermission(
-            context, Manifest.permission.POST_NOTIFICATIONS
-        ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < 33
-        ) {
-            try {
-                NotificationManagerCompat.from(context).notify(task.id.toInt(), notification)
-            } catch (e: SecurityException) {
-                Log.e("NotifTest", "Sin permiso de notificaciones", e)
             }
         }
     }

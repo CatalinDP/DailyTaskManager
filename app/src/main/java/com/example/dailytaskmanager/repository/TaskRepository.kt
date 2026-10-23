@@ -19,5 +19,8 @@ interface TaskRepository {
     suspend fun setCompleted(taskId: Long, date: LocalDate, done: Boolean)
 
     fun completedIds(date: LocalDate): Flow<List<Long>>
-    fun completionDates(from: LocalDate, to: LocalDate): Flow<List<LocalDate>>
-}
+    fun completionDates(from: LocalDate, to: LocalDate): Flow<List<TaskCompletion>>
+
+    fun allCompletions(): Flow<List<TaskCompletion>>
+
+    suspend fun isCompleted(taskId: Long, date: LocalDate): Boolean}

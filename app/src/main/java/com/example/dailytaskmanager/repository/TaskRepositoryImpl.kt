@@ -2,11 +2,14 @@ package com.example.dailytaskmanager.repository
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.dailytaskmanager.dao.TaskDao
 import com.example.dailytaskmanager.model.Task
 import com.example.dailytaskmanager.model.TaskCompletion
 import com.example.dailytaskmanager.notifications.TaskAlarmScheduler
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.any
+import kotlinx.coroutines.flow.collect
 import java.time.LocalDate
 
 class TaskRepositoryImpl(
@@ -61,8 +64,16 @@ class TaskRepositoryImpl(
     override fun completionDates(
         from: LocalDate,
         to: LocalDate
-    ): Flow<List<LocalDate>> {
+    ): Flow<List<TaskCompletion>> {
         return dao.completionDates(from, to)
+    }
+
+    override fun allCompletions(): Flow<List<TaskCompletion>> {
+        return dao.allCompletions()
+    }
+
+    override suspend fun isCompleted(taskId: Long, date: LocalDate): Boolean {
+        return dao.isCompleted(taskId, date)
     }
 
     override suspend fun setCompleted(taskId: Long, date: LocalDate, done: Boolean) {

@@ -6,6 +6,10 @@
     <string name="notification_test_title">Notificación de prueba</string>
     <string name="notification_test_text">Si ves esto, las notificaciones funcionan</string>
     <string name="notification_task_text">Es hora de empezar tu tarea</string>
+    <string name="notification_until">Hasta las %1$s</string>
+    <string name="action_complete">Completar</string>
+    <string name="action_snooze">Posponer 10 min</string>
+    <string name="channel_ongoing_name">Tarea en curso</string>
 
     <!-- Navigation -->
     <string name="navigation_home">Inicio</string>

@@ -30,13 +30,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.model.Task
+import com.example.dailytaskmanager.utils.getCurrentDayName
 
 @Composable
 fun TaskItem(
     task: Task,
     isCompleted: Boolean,
     onTaskChecked: (Task, Boolean) -> Unit = { _, _ -> },
-    onTap: (Task) -> Unit
+    onTap: (Task) -> Unit,
+    isToday: Boolean
 ) {
     var isChecked by remember { mutableStateOf(isCompleted) }
     Card(
@@ -67,7 +69,8 @@ fun TaskItem(
                         checkedColor = MaterialTheme.colorScheme.primary,
                         uncheckedColor = MaterialTheme.colorScheme.outline,
                         checkmarkColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    ),
+                    enabled = isToday
                 )
                 Column {
                     Text(

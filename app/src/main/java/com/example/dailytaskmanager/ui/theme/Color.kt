@@ -14,7 +14,7 @@ val IndigoDarkContainer = Color(0xFF3441B8)
 val Butter = Color(0xFF775A00)             // tertiary claro, texto legible
 val ButterContainer = Color(0xFFFFE08A)
 val ButterDeepText = Color(0xFF251A00)
-val ButterLight = Color(0xFFF5C84B)
+val ButterLight = Color(0xFFB07C0A)
 val ButterDarkContainer = Color(0xFF594400)
 
 // Secondary (gris azulado neutro)

@@ -5,14 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.dailytaskmanager.model.Converters
 import com.example.dailytaskmanager.model.Task
 import com.example.dailytaskmanager.dao.TaskDao
 import com.example.dailytaskmanager.dao.UserDao
 import com.example.dailytaskmanager.model.TaskCompletion
 import com.example.dailytaskmanager.model.User
 
-@Database(entities = [ Task::class, User::class, TaskCompletion::class], version = 7, exportSchema = false)
+@Database(entities = [ Task::class, User::class, TaskCompletion::class], version = 7, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun taskDao(): TaskDao
@@ -29,7 +28,7 @@ abstract class AppDatabase: RoomDatabase() {
                     AppDatabase::class.java,
                     "daily_tasks.db"
                 )
-                    .fallbackToDestructiveMigration(false)
+                    .addMigrations(*ALL_MIGRATIONS)
                     .build()
                 instance = newInstance
                 newInstance

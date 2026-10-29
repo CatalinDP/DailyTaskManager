@@ -16,17 +16,17 @@ data class TopLevelDestination<T : Any>(
 
 val topLevelDestinations = listOf(
     TopLevelDestination(
-        route = HomeView,
+        route = HomeRoute,
         labelRes = R.string.navigation_home,
         icon = Icons.Rounded.Home
     ),
     TopLevelDestination(
-        route = TaskView,
+        route = TasksRoute,
         labelRes = R.string.navigation_tasks,
         icon = Icons.Rounded.Task
     ),
     TopLevelDestination(
-        route = SettingsView,
+        route = SettingsRoute,
         labelRes = R.string.navigation_settings,
         icon = Icons.Rounded.Settings
     ),

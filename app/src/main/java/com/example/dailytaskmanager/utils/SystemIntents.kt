@@ -10,12 +10,24 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
 import com.example.dailytaskmanager.R
+import timber.log.Timber
+
+/** Starts [intent], telling the user instead of crashing when no app can handle it (OEM ROMs, no mail app). */
+private fun Context.startActivitySafely(intent: Intent) {
+    try {
+        startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        Timber.w(e, "No activity for ${intent.action}")
+        Toast.makeText(this, R.string.error_no_app_to_open, Toast.LENGTH_SHORT).show()
+    }
+}
 
 fun Context.openNotificationSettings() {
-    startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+    startActivitySafely(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
         putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
     })
 }
@@ -26,22 +38,17 @@ fun Context.canScheduleExactAlarms(): Boolean =
 
 fun Context.openExactAlarmSettings() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        startActivity(
+        startActivitySafely(
             Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName"))
         )
     }
 }
 
 fun Context.sendFeedback() {
-    val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).apply {
+    startActivitySafely(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).apply {
         putExtra(Intent.EXTRA_EMAIL, arrayOf("cdpstudioWebMobile@gmail.com"))
         putExtra(Intent.EXTRA_SUBJECT, getString(R.string.settings_feedback_subject))
-    }
-    try {
-        startActivity(intent)
-    } catch (e: ActivityNotFoundException) {
-        //TODO Avisa con un Snackbar: no hay app de correo instalada
-    }
+    })
 }
 
 fun Context.hasLocationPermission(): Boolean =
@@ -54,7 +61,7 @@ fun Context.isSystemLocationEnabled(): Boolean {
 }
 
 fun Context.openAppSettings() {
-    startActivity(
+    startActivitySafely(
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", packageName, null)
         }
@@ -62,5 +69,5 @@ fun Context.openAppSettings() {
 }
 
 fun Context.openLocationSettings() {
-    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+    startActivitySafely(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
 }

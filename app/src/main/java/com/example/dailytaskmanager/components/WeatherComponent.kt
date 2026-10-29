@@ -1,15 +1,13 @@
 package com.example.dailytaskmanager.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AcUnit
@@ -18,7 +16,6 @@ import androidx.compose.material.icons.filled.Thunderstorm
 import androidx.compose.material.icons.filled.Umbrella
 import androidx.compose.material.icons.filled.WbCloudy
 import androidx.compose.material.icons.filled.WbSunny
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,15 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.model.TempUnit
 import com.example.dailytaskmanager.model.toDisplay
-import com.example.dailytaskmanager.weather.WeatherResponse
+import com.example.dailytaskmanager.model.WeatherResponse
 
 @Composable
 fun WeatherComponent(
@@ -43,24 +38,23 @@ fun WeatherComponent(
 ) {
     val current = weather.current
     val daily = weather.daily
-    var temperature = current.temperature.toInt()
-    var maxTemp = daily.max.map { it.toInt() }
-    var minTemp = daily.min.map { it.toInt()  }
-    val rain = daily.rain.max()
+    val temperature = weather.current.temperature.toDisplay(unit)
+    val maxTemp = weather.daily.max?.firstOrNull()?.toDisplay(unit)
+    val minTemp = weather.daily.min?.firstOrNull()?.toDisplay(unit)
+    val rain = weather.daily.rain.firstOrNull()
+    val unitString = stringResource(
+        if (unit == TempUnit.FAHRENHEIT) R.string.temp_unit_fahrenheit else R.string.temp_unit_celsius
+    )
     val code = current.code
     val icon = weatherIcon(code)
-    if (unit == TempUnit.FAHRENHEIT) {
-        temperature = current.temperature.toDisplay(unit)
-        maxTemp = daily.max.map { it.toDisplay(unit)  }
-        minTemp = daily.min.map { it.toDisplay(unit)  }
-    }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .border(1.dp, MaterialTheme.colorScheme.inversePrimary, RoundedCornerShape(16.dp))
             .clip(shape = RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.primaryContainer),
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(18.dp)
     ) {
@@ -68,24 +62,26 @@ fun WeatherComponent(
             icon,
             contentDescription = stringResource(R.string.weather_icon_description),
             modifier = Modifier
-                .size(24.dp),
+                .size(24.dp)
+                .padding(start = 8.dp),
             tint = MaterialTheme.colorScheme.onPrimaryContainer
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.Start
         ) {
             Text(
                 text = stringResource(R.string.weather_today_forecast),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.surface
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(0.8f)
             )
             Text(
                 text = stringResource(R.string.weather_current_temperature, temperature),
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
             Text(
-                text = stringResource(R.string.weather_rain_probability, rain),
+                text = rain?.let { stringResource(R.string.weather_rain_probability, it) } ?: "—",
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.tertiary
             )
@@ -94,14 +90,14 @@ fun WeatherComponent(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                text = "$maxTemp",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.surface
+                text = stringResource(R.string.weather_max, maxTemp?.toString() ?: "—", unitString),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary
             )
             Text(
-                text = "$minTemp",
+                text = stringResource(R.string.weather_min, minTemp?.toString() ?: "—", unitString),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = MaterialTheme.colorScheme.secondary
             )
         }
     }

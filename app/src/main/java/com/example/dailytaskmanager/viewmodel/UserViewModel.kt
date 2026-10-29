@@ -2,35 +2,26 @@ package com.example.dailytaskmanager.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dailytaskmanager.dao.UserDao
 import com.example.dailytaskmanager.model.User
-import com.example.dailytaskmanager.uiState.UserInfoUiState
-import com.example.dailytaskmanager.uiState.UserInfoValidationError
+import com.example.dailytaskmanager.repository.UserRepository
+import com.example.dailytaskmanager.uistate.UserInfoUiState
+import com.example.dailytaskmanager.uistate.UserInfoValidationError
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
-
-class UserViewModel(private val userDao: UserDao): ViewModel() {
+class UserViewModel(private val repository: UserRepository): ViewModel() {
     private val _uiState = MutableStateFlow(UserInfoUiState())
-    var uiState: StateFlow<UserInfoUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<UserInfoUiState> = _uiState.asStateFlow()
 
-    private val _userName = MutableStateFlow("")
-    private val _userStartingHour = MutableStateFlow(LocalTime.now())
-    var userName: StateFlow<String> = _userName.asStateFlow()
-    var userStartingHour = _userStartingHour.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            _userName.value = userDao.getUserName() ?: ""
-            _userStartingHour.value = userDao.getUserStartingTime() ?: LocalTime.now()
-        }
-    }
+    val userName = repository.user.map { it?.name.orEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
 
     fun onNameChange(name: String) = _uiState.update { it.copy(name = name) }
     fun onStartingHourChange(startingHour: LocalTime) = _uiState.update { it.copy(startingHour = startingHour) }
@@ -45,7 +36,7 @@ class UserViewModel(private val userDao: UserDao): ViewModel() {
             return
         }
         viewModelScope.launch {
-            userDao.insertUser(
+            repository.upsertUser(
                 User(
                     name = state.name.trim(),
                     startingTime = state.startingHour
@@ -55,14 +46,4 @@ class UserViewModel(private val userDao: UserDao): ViewModel() {
             onSave()
         }
     }
-
-    fun deleteUser() {
-        viewModelScope.launch {
-            val user = userDao.getUser()
-            if (user != null) {
-                userDao.deleteUser(user)
-            }
-        }
-    }
-
 }

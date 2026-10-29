@@ -4,88 +4,82 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.dailytaskmanager.viewmodel.UserViewModel
-import com.example.dailytaskmanager.views.TaskView
-import org.koin.compose.viewmodel.koinViewModel
-import androidx.compose.ui.Alignment
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.dailytaskmanager.components.AppBottomBar
-import com.example.dailytaskmanager.viewmodel.SettingsViewModel
 import com.example.dailytaskmanager.views.HomeView
 import com.example.dailytaskmanager.views.OnboardingView
 import com.example.dailytaskmanager.views.SettingsView
+import com.example.dailytaskmanager.views.TaskView
 
 @Composable
 fun AppNavigation(
-    userViewModel: UserViewModel = koinViewModel()
+    initialStart: StartDestination
 ) {
-    val navController = rememberNavController();
-    val userName = userViewModel.userName.collectAsStateWithLifecycle()
-    val userFinishedOnboarding: Boolean = !userName.value.isBlank()
+    val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val canShowBottomBar = topLevelDestinations.any { dest ->
         currentDestination?.hasRoute(dest.route::class) == true
     }
-    Box() {
+    val startAtHome = rememberSaveable { initialStart == StartDestination.Home }
+    Box {
         NavHost(
             navController = navController,
-            startDestination = if (userFinishedOnboarding) HomeView else Onboarding,
+            startDestination = if (startAtHome) HomeRoute else OnboardingRoute,
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            composable<Onboarding> {
+            composable<OnboardingRoute> {
                 OnboardingView(
                     onNavigateToHome = {
-                        navController.navigateToTopLevel(TaskView)
+                        navController.navigate(HomeRoute) {
+                            popUpTo<OnboardingRoute> { inclusive = true }
+                        }
                     }
                 )
             }
 
-            composable<TaskView> {
-                TaskView(
-                    onBackButton = { navController.popBackStack() }
-                )
+            composable<TasksRoute> {
+                TaskView()
             }
 
-            composable<HomeView> {
+            composable<HomeRoute> {
                 HomeView(
-                    onSeeMoreTasksTap = { navController.navigateToTopLevel(TaskView) }
+                    onSeeMoreTasksTap = { navController.navigateToTopLevel(TasksRoute) }
                 )
             }
-            composable<SettingsView> {
+            composable<SettingsRoute> {
                 SettingsView()
             }
         }
         if (canShowBottomBar) {
             AppBottomBar(
                 currentDestination = currentDestination,
-                onNavigate = { route ->
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
+                onNavigate = navController::navigateToTopLevel,
                 modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }
 }
 
+/**
+ * Navigates between bottom-bar destinations keeping a single [HomeRoute] at the root.
+ *
+ * Pops up to [HomeRoute] instead of the graph's start destination: after the first
+ * onboarding the start destination ([OnboardingRoute]) is no longer on the back stack,
+ * so popping to it would be ignored and the stack would grow on every tab change.
+ */
 fun NavController.navigateToTopLevel(route: Any) {
     navigate(route) {
-        popUpTo(graph.findStartDestination().id) {
+        popUpTo<HomeRoute> {
             saveState = true
         }
         launchSingleTop = true

@@ -18,16 +18,13 @@ interface TaskDao {
     fun getAllTasks(): Flow<List<Task>>
 
     @Query("SELECT * FROM tasks ORDER BY startingTime ASC")
-    fun getAllTasksList(): List<Task>
+    suspend fun getAllTasksList(): List<Task>
 
     @Query("SELECT * FROM tasks WHERE id = :id")
-    suspend fun getTaskById(id: Long?): Task?
+    suspend fun getTaskById(id: Long): Task?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTask(task: Task): Long
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(tasks: List<Task>)
 
     @Update
     suspend fun updateTask(task: Task)
@@ -46,9 +43,6 @@ interface TaskDao {
 
     @Query("SELECT * FROM task_completion WHERE date BETWEEN :from AND :to")
     fun completionDates(from: LocalDate, to: LocalDate): Flow<List<TaskCompletion>>
-
-    @Query("SELECT * FROM task_completion")
-    fun allCompletions(): Flow<List<TaskCompletion>>
 
     @Query("SELECT EXISTS(SELECT 1 FROM task_completion WHERE taskId = :taskId AND date = :date)")
     suspend fun isCompleted(taskId: Long, date: LocalDate): Boolean

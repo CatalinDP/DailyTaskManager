@@ -62,3 +62,31 @@ Desktop.ini
 *~
 .fleet/
 .vscode/
+
+# ===== AI tooling / local assistants =====
+.claude/
+.code-review-graph/
+CLAUDE.local.md
+
+# ===== Gradle extras =====
+.gradletasknamecache
+gradle-app.setting
+buildSrc/build/
+**/build/intermediates/
+
+# ===== Android generated / tooling =====
+proguard/
+*.hprof
+*.trace
+bin/
+gen/
+.navigation/
+
+# ===== Compose / Kotlin compiler reports =====
+compose-reports/
+compose-metrics/
+
+# ===== Windows =====
+$RECYCLE.BIN/
+*.lnk
+AUDIT.md

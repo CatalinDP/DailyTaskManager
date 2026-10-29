@@ -1,22 +1,9 @@
 package com.example.dailytaskmanager.notifications
 
-import android.Manifest
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresPermission
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import com.example.dailytaskmanager.DailyTaskApplication.Companion.CHANNEL_ID
-import com.example.dailytaskmanager.MainActivity
-import com.example.dailytaskmanager.R
-import com.example.dailytaskmanager.dao.TaskDao
-import com.example.dailytaskmanager.model.Task
+import timber.log.Timber
 import com.example.dailytaskmanager.repository.TaskRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,24 +18,19 @@ class TaskAlarmReceiver : BroadcastReceiver(), KoinComponent {
     private val notifier: TaskNotifier by inject()
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        val taskId = intent?.getLongExtra("taskId", -1L)
-        Log.d("NotifTest", "onReceive llamado, taskId=${intent?.getLongExtra("taskId", -1)}")
+        val taskId = intent?.getLongExtra(EXTRA_TASK_ID, -1L) ?: -1L
+        Timber.d("onReceive llamado, taskId=$taskId")
         if (taskId == -1L || context == null) return
-
-        if (taskId == -2L) {
-            sendTestNotification(context)
-            return
-        }
 
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val task = repository.getTaskById(taskId!!) ?: return@launch
+                val task = repository.getTaskById(taskId) ?: return@launch
                 val doneToday = repository.isCompleted(taskId, LocalDate.now())
                 if (!doneToday) notifier.show(task, silent = false)
                 scheduler.schedule(task)
-            } catch(e: SecurityException) {
-                Log.e("NotifTest", "Error en receiver", e)
+            } catch (e: Exception) {
+                Timber.e(e, "Task alarm handling failed")
             } finally {
                 pending.finish()
             }

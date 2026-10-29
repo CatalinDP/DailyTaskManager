@@ -1,46 +1,25 @@
 package com.example.dailytaskmanager.notifications
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresPermission
+import timber.log.Timber
 import androidx.core.content.getSystemService
 import com.example.dailytaskmanager.model.Task
+import com.example.dailytaskmanager.utils.canScheduleExactAlarms
+import com.example.dailytaskmanager.utils.nextTriggerTime
 import java.time.ZoneId
 
 class TaskAlarmScheduler(private val context: Context) {
     private val alarmManager = context.getSystemService<AlarmManager>()!!
 
-    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     fun schedule(task: Task) {
-        val trigger = nextTriggerTime(task.repetitionDays, task.startingTime ?: return) ?: return
+        val trigger = nextTriggerTime(task.repetitionDays, task.startingTime) ?: return
         val millis = trigger.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        val pi = pendingIntent(task.id)
-        Log.d("NotifTest", "Scheduling ${task.name} - Millis: $millis - TaskId: ${task.id}")
-        val canBeExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-                alarmManager.canScheduleExactAlarms()
-        try {
-            if (canBeExact) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    millis,
-                    pi
-                )
-            } else {
-                alarmManager.set(
-                    AlarmManager.RTC_WAKEUP,
-                    millis,
-                    pi
-                )
-            }
-        } catch (e: SecurityException) {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
-        }
+        Timber.d("Scheduling task ${task.id} at $millis")
+        setAlarm(millis, pendingIntent(task.id))
     }
 
     fun cancel(taskId: Long) {
@@ -48,16 +27,21 @@ class TaskAlarmScheduler(private val context: Context) {
         alarmManager.cancel(snoozeIntent(taskId))
     }
 
-    @SuppressLint("ScheduleExactAlarm")
     fun scheduleSnooze(taskId: Long, minutes: Long) {
         val millis = System.currentTimeMillis() + minutes * 60_000
-        val pi = snoozeIntent(taskId)
-        val canBeExact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-                alarmManager.canScheduleExactAlarms()
+        setAlarm(millis, snoozeIntent(taskId))
+    }
+
+    @SuppressLint("ScheduleExactAlarm") // Guarded by canScheduleExactAlarms()
+    private fun setAlarm(millis: Long, pi: PendingIntent) {
         try {
-            if (canBeExact) alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
-            else alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
+            if (context.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
+            } else {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
+            }
         } catch (e: SecurityException) {
+            Timber.w(e, "Exact alarm denied, falling back to inexact")
             alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, millis, pi)
         }
     }
@@ -65,21 +49,19 @@ class TaskAlarmScheduler(private val context: Context) {
     private fun snoozeIntent(taskId: Long): PendingIntent =
         PendingIntent.getBroadcast(
             context,
-            (taskId.toString() + ACTION_SHOW).hashCode(),
+            (taskId.toString() + ACTION_SNOOZE_FIRE).hashCode(),
             Intent(context, NotificationActionReceiver::class.java).apply {
-                action = ACTION_SHOW
+                action = ACTION_SNOOZE_FIRE
                 putExtra(EXTRA_TASK_ID, taskId)
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-    private fun pendingIntent(taskId: Long): PendingIntent {
-        Log.d("NotifTest", "TaskId: $taskId")
-        return PendingIntent.getBroadcast(
+    private fun pendingIntent(taskId: Long): PendingIntent =
+        PendingIntent.getBroadcast(
             context,
             taskId.toInt(),
-            Intent(context, TaskAlarmReceiver::class.java).putExtra("taskId", taskId),
+            Intent(context, TaskAlarmReceiver::class.java).putExtra(EXTRA_TASK_ID, taskId),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-    }
 }

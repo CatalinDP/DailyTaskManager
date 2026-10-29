@@ -10,6 +10,7 @@ import com.example.dailytaskmanager.DailyTaskApplication
 import com.example.dailytaskmanager.MainActivity
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.model.Task
+import com.example.dailytaskmanager.notifications.standUp.STAND_UP_REQUEST_CODE
 import java.time.Duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -17,7 +18,7 @@ import java.time.format.FormatStyle
 
 class TaskNotifier(private val context: Context) {
 
-    @SuppressLint("MissingPermission") // se comprueba con areNotificationsEnabled()
+    @SuppressLint("MissingPermission")
     fun show(task: Task, silent: Boolean) {
         val manager = NotificationManagerCompat.from(context)
         if (!manager.areNotificationsEnabled()) return
@@ -43,6 +44,22 @@ class TaskNotifier(private val context: Context) {
             .build()
 
         manager.notify(task.id.toInt(), notification)
+    }
+
+    @SuppressLint("MissingPermission")
+    fun showStandUp() {
+        val manager = NotificationManagerCompat.from(context)
+        if (!manager.areNotificationsEnabled()) return
+
+        val notification = NotificationCompat.Builder(context, DailyTaskApplication.CHANNEL_STAND_UP_ID)
+            .setSmallIcon(R.drawable.starter_icon)
+            .setContentTitle(context.getString(R.string.standup_title))
+            .setContentText(context.getString(R.string.standup_text))
+            .setContentIntent(openAppIntent(STAND_UP_REQUEST_CODE.toLong()))
+            .setAutoCancel(true)
+            .build()
+
+        manager.notify(STAND_UP_REQUEST_CODE, notification)
     }
 
     fun cancel(taskId: Long) =

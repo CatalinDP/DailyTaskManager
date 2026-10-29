@@ -18,7 +18,7 @@ fun calculateStreak(
         .mapValues { it.value.toSet() }
 
     fun scheduledIds(date: LocalDate): Set<Long> {
-        val day = Day.valueOf(date.dayOfWeek.name)
+        val day = date.toDay()
         return tasks
             .filter { day in it.repetitionDays && it.createdAt <= date }
             .map { it.id }

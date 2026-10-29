@@ -3,47 +3,70 @@ package com.example.dailytaskmanager.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dailytaskmanager.model.ErrorReason
+import com.example.dailytaskmanager.model.Task
 import com.example.dailytaskmanager.model.WeatherState
-import com.example.dailytaskmanager.utils.getCurrentDayName
-import com.example.dailytaskmanager.weather.WeatherRepository
+import com.example.dailytaskmanager.repository.LocationRepository
+import com.example.dailytaskmanager.repository.TaskRepository
+import com.example.dailytaskmanager.repository.WeatherRepository
+import com.example.dailytaskmanager.utils.toDay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalTime
+import java.time.LocalDateTime
 import kotlin.time.Duration.Companion.milliseconds
 
 class HomeViewModel(
-    private val repository: WeatherRepository,
-    private val taskViewModel: TaskViewModel
+    private val weatherRepository: WeatherRepository,
+    private val taskRepository: TaskRepository,
+    private val locationRepository: LocationRepository
 ): ViewModel() {
     private val _weather = MutableStateFlow<WeatherState>(WeatherState.Loading)
     val weather = _weather.asStateFlow()
-    var coordinates = MutableStateFlow(Pair(0.0, 0.0))
-    private val ticker = flow { while (true)  { emit(LocalTime.now()); delay(180_000.milliseconds) } }
 
-    private val remainingToday = combine(taskViewModel.selectedDayTasks, ticker) { tasks, now ->
-        tasks.filter { getCurrentDayName() in it.repetitionDays && it.endingTime!! >= now }
-            .sortedBy { it.startingTime }
-    }
+    private val clock = flow { while (true) { emit(LocalDateTime.now()); delay(60_000.milliseconds) } }
+        .shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 
-    val remainingCount = remainingToday.map { it.size }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+    // Re-evaluated when the date changes, so the list stays correct past midnight
+    private val todayTasksFlow = combine(
+        taskRepository.getAllTasks(),
+        clock.map { it.toLocalDate() }.distinctUntilChanged()
+    ) { tasks, date ->
+        val day = date.toDay()
+        tasks.filter { day in it.repetitionDays }.sortedBy { it.startingTime }
+    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 
-    val nextTasks = remainingToday.map { it.take(3) }
+    val todayTasks: StateFlow<List<Task>> = todayTasksFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun getWeather(lat: Double, lon: Double) {
+    val nextTasks: StateFlow<List<Task>> = combine(todayTasksFlow, clock) { tasks, now ->
+        tasks.filter { it.endingTime >= now.toLocalTime() }.take(3)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Loads the weather once per ViewModel; already loaded data is kept when coming back to Home. */
+    fun loadWeather() {
+        if (_weather.value is WeatherState.Success) return
         viewModelScope.launch {
             _weather.value = WeatherState.Loading
-            repository.get(lat, lon)
+            val location = locationRepository.currentLocation()
+            if (location == null) {
+                _weather.value = WeatherState.Error(ErrorReason.LOCATION_DENIED)
+                return@launch
+            }
+            weatherRepository.get(location.latitude, location.longitude)
                 .onSuccess { _weather.value = WeatherState.Success(it) }
-                .onFailure { _weather.value = WeatherState.Error(ErrorReason.NETWORK) }
+                .onFailure { e ->
+                    val reason = (e as? WeatherRepository.WeatherException)?.reason ?: ErrorReason.NETWORK
+                    _weather.value = WeatherState.Error(reason)
+                }
         }
     }
 

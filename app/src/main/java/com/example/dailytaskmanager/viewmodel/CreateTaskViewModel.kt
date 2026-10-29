@@ -1,12 +1,14 @@
 package com.example.dailytaskmanager.viewmodel
 
-import android.util.Log
+import timber.log.Timber
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dailytaskmanager.model.Day
 import com.example.dailytaskmanager.model.Task
+import com.example.dailytaskmanager.repository.TaskReminderUseCase
 import com.example.dailytaskmanager.repository.TaskRepository
-import com.example.dailytaskmanager.uiState.CreateTaskUiState
+import com.example.dailytaskmanager.uistate.CreateTaskUiState
+import com.example.dailytaskmanager.uistate.CreateTaskValidationError
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +16,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
-class CreateTaskViewModel(private val repository: TaskRepository) : ViewModel() {
+class CreateTaskViewModel(
+    private val repository: TaskRepository,
+    private val reminders: TaskReminderUseCase
+) : ViewModel() {
     private val _uiState = MutableStateFlow(CreateTaskUiState())
     val uiState: StateFlow<CreateTaskUiState> = _uiState.asStateFlow()
 
@@ -23,7 +28,7 @@ class CreateTaskViewModel(private val repository: TaskRepository) : ViewModel() 
 
     fun onDayToggled(day: Day) = _uiState.update {
         val days = if (day in it.taskRepetitionDays) it.taskRepetitionDays - day else it.taskRepetitionDays + day
-        Log.d("COMPLETION", days.toString())
+        Timber.d("days: $days")
         it.copy(taskRepetitionDays = days)
     }
 
@@ -42,11 +47,11 @@ class CreateTaskViewModel(private val repository: TaskRepository) : ViewModel() 
         }
     }
 
-    fun saveTask(onSaved: () -> Unit) {
+    fun saveTask(onSaved: () -> Unit, onError: (CreateTaskValidationError) -> Unit) {
         val state = _uiState.value
-        if (!state.canSave) return
+        state.validationError?.let { onError(it); return }
         viewModelScope.launch {
-            repository.insertTask(
+            reminders.insertTask(
                 Task(
                     name = state.taskName.trim(),
                     startingTime = state.taskStartTime,
@@ -59,19 +64,22 @@ class CreateTaskViewModel(private val repository: TaskRepository) : ViewModel() 
         }
     }
 
-    fun updateTask(onUpdated: () -> Unit) {
+    fun updateTask(onUpdated: () -> Unit, onError: (CreateTaskValidationError) -> Unit) {
         val state = _uiState.value
-        if (!state.canSave) return
+        state.validationError?.let { onError(it); return }
         viewModelScope.launch {
-            repository.updateTask(
-                Task(
-                    id = state.taskId,
-                    name = state.taskName.trim(),
-                    startingTime = state.taskStartTime,
-                    endingTime = state.taskEndTime,
-                    repetitionDays = state.taskRepetitionDays.toList().sortedBy { it.ordinal },
+            // Deleted meanwhile (e.g. from another screen): nothing left to edit, just close
+            val original = repository.getTaskById(state.taskId)
+            if (original != null) {
+                reminders.updateTask(
+                    original.copy(
+                        name = state.taskName.trim(),
+                        startingTime = state.taskStartTime,
+                        endingTime = state.taskEndTime,
+                        repetitionDays = state.taskRepetitionDays.toList().sortedBy { it.ordinal },
+                    )
                 )
-            )
+            }
             _uiState.value = CreateTaskUiState()
             onUpdated()
         }

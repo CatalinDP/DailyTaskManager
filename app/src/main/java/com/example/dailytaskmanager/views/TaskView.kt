@@ -1,10 +1,7 @@
 package com.example.dailytaskmanager.views
 
-import android.util.Log
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,10 +27,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,7 +44,6 @@ import com.example.dailytaskmanager.components.SwipeToDeleteContainer
 import com.example.dailytaskmanager.components.TaskItem
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.components.DaySelector
-import com.example.dailytaskmanager.model.Day
 import com.example.dailytaskmanager.model.Task
 import com.example.dailytaskmanager.utils.getCurrentDayName
 import com.example.dailytaskmanager.utils.getFormattedCurrentDate
@@ -62,7 +55,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskView(
-    onBackButton: () -> Unit,
     taskViewModel: TaskViewModel = koinViewModel(),
     userViewModel: UserViewModel = koinViewModel()
 ) {
@@ -73,14 +65,9 @@ fun TaskView(
     val snackbarHostState = remember { SnackbarHostState() }
     val taskDeletedMessage = stringResource(R.string.tasks_deleted)
     val undoLabel = stringResource(R.string.tasks_undo)
-    var undoCount by remember { mutableIntStateOf(0) }
     val selectedDay = taskViewModel.selectedDay.collectAsStateWithLifecycle()
     val completedIds = taskViewModel.completedIds.collectAsStateWithLifecycle()
     var taskTapped: Task? by remember { mutableStateOf(null) }
-
-    LaunchedEffect(completedIds) {
-        Log.d("COMPLETION", "completedIds: ${completedIds.value}")
-    }
 
     Scaffold(
         modifier = Modifier
@@ -120,14 +107,13 @@ fun TaskView(
             )
         }
     ) { innerPadding ->
-        Log.d("TASK", "lista: ${todayTaskList.map { it.id }}")
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(
                 top = innerPadding.calculateTopPadding() + 16.dp,
-                bottom = 124.dp,
+                bottom = 152.dp,
                 start = 24.dp,
                 end = 24.dp
             ),
@@ -142,13 +128,11 @@ fun TaskView(
                 }
 
             } else {
+                // A pending-delete task leaves the list, so on undo it comes back with a fresh swipe state
                 items(todayTaskList, key = { it.id }) { task ->
-                    key(undoCount) {
-                        Log.d("DAY", "${task.name} - ${task.repetitionDays.toString()}")
                         SwipeToDeleteContainer(
                             modifier = Modifier.animateItem(),
                             onDelete = {
-                                Log.d("TASK", "Tarea Eliminar: ${task.id}")
                                 taskViewModel.requestDelete(task)
                                 scope.launch {
                                     snackbarHostState.currentSnackbarData?.dismiss()
@@ -159,16 +143,12 @@ fun TaskView(
                                             actionLabel = undoLabel,
                                             duration = SnackbarDuration.Short
                                         )
-                                        Log.d("TASKDEL", "snackbar result: $result")
                                         undone = result == SnackbarResult.ActionPerformed
                                     } finally {
                                         if (!undone) {
                                             taskViewModel.commitDelete(task)
-                                            Log.d("TASKDEL", "Tarea eliminada")
                                         } else {
-                                            undoCount++
                                             taskViewModel.undoDelete(task)
-                                            Log.d("TASKDEL", "Tarea salvada")
                                         }
                                     }
                                 }
@@ -185,23 +165,20 @@ fun TaskView(
                                 )
 
                         }
-                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-            if (showBottomSheet) {
-                item {
-                    CreateTaskBottomSheet(
-                        onDismiss = {
-                            showBottomSheet = false
-                            taskTapped = null
-                                    },
-                        task = taskTapped
-                    )
-                }
-            }
+        }
+        if (showBottomSheet) {
+            CreateTaskBottomSheet(
+                onDismiss = {
+                    showBottomSheet = false
+                    taskTapped = null
+                },
+                task = taskTapped
+            )
         }
         Box(
             modifier = Modifier

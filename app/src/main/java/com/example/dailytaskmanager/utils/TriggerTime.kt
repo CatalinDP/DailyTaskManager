@@ -1,4 +1,4 @@
-package com.example.dailytaskmanager.notifications
+package com.example.dailytaskmanager.utils
 
 import com.example.dailytaskmanager.model.Day
 import java.time.LocalDateTime
@@ -13,7 +13,7 @@ fun nextTriggerTime(
     for (offset in 0L..7L) {
         val date = now.toLocalDate().plusDays(offset)
         val candidate = date.atTime(time)
-        if (Day.valueOf(date.dayOfWeek.name) in days && candidate.isAfter(now)) {
+        if (date.toDay() in days && candidate.isAfter(now)) {
             return candidate
         }
     }

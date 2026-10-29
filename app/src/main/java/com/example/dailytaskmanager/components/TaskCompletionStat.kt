@@ -3,6 +3,7 @@ package com.example.dailytaskmanager.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,19 +24,17 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.dailytaskmanager.R
-import com.example.dailytaskmanager.viewmodel.TaskViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import com.example.dailytaskmanager.model.Task
 
 @Composable
 fun TaskCompletionStat(
-    taskViewModel: TaskViewModel = koinViewModel()
+    tasks: List<Task>,
+    completedIds: Set<Long>
 ) {
-    val tasks = taskViewModel.selectedDayTasks.collectAsStateWithLifecycle()
-    val completedIds = taskViewModel.completedIds.collectAsStateWithLifecycle()
-    val tasksCompletedToday = tasks.value.filter { it.id in completedIds.value }.size
-    val totalTasks = tasks.value.size
+    val tasksCompletedToday = tasks.count { it.id in completedIds }
+    val totalTasks = tasks.size
+    val colors = MaterialTheme.colorScheme
 
     val target = if (totalTasks == 0) 0f else tasksCompletedToday.toFloat() / totalTasks
     val progress = animateFloatAsState(
@@ -48,8 +47,9 @@ fun TaskCompletionStat(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
+            .border(1.dp, colors.outlineVariant, RoundedCornerShape(16.dp))
             .clip(shape = RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(colors.surfaceContainerHigh),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(18.dp)
     ) {
@@ -63,15 +63,15 @@ fun TaskCompletionStat(
                 modifier = Modifier
                     .size(100.dp)
                     .align(Alignment.Center),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = colors.tertiary,
+                trackColor = colors.onSurfaceVariant,
                 strokeWidth = 12.dp,
                 strokeCap = StrokeCap.Round
             )
             Text(
                 text = stringResource(R.string.task_progress_percent, totalPercentage),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = colors.onSurface
             )
         }
         Column(
@@ -80,7 +80,7 @@ fun TaskCompletionStat(
             Text(
                 text = stringResource(R.string.task_completion_today_title),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.secondary
+                color = colors.onSurfaceVariant
             )
             Text(
                 text = pluralStringResource(
@@ -90,12 +90,12 @@ fun TaskCompletionStat(
                     totalTasks
                 ),
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                color = colors.onSurface
             )
             Text(
                 text = stringResource(R.string.task_progress_message),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.tertiary
+                color = colors.primary
             )
         }
     }

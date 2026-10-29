@@ -7,20 +7,14 @@ import java.time.LocalDate
 
 interface TaskRepository {
     fun getAllTasks(): Flow<List<Task>>
-    fun getAllTasksList(): List<Task>
+    suspend fun getAllTasksList(): List<Task>
     suspend fun getTaskById(id: Long): Task?
-    suspend fun insertTask(task: Task)
+    suspend fun insertTask(task: Task): Long
     suspend fun updateTask(task: Task)
     suspend fun deleteTask(task: Task)
-    suspend fun insertAll(tasks: List<Task>)
-
-    fun cancelReminder(task: Task)
-    fun scheduleReminder(task: Task)
     suspend fun setCompleted(taskId: Long, date: LocalDate, done: Boolean)
 
     fun completedIds(date: LocalDate): Flow<List<Long>>
     fun completionDates(from: LocalDate, to: LocalDate): Flow<List<TaskCompletion>>
-
-    fun allCompletions(): Flow<List<TaskCompletion>>
-
-    suspend fun isCompleted(taskId: Long, date: LocalDate): Boolean}
+    suspend fun isCompleted(taskId: Long, date: LocalDate): Boolean
+}

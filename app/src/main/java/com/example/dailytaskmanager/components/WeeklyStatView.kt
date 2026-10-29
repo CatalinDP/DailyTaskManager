@@ -3,6 +3,7 @@ package com.example.dailytaskmanager.components
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,14 +37,14 @@ fun WeeklyStatView(
             .height(chartHeight + 16.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
-        ,
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         values.forEachIndexed { index, value ->
             val highlighted = index == highlightedIndex
             val fraction by animateFloatAsState(
-                targetValue = (value ?: 0f).coerceIn(0.1f, 1f),
+                targetValue = (value ?: 0f).coerceIn(0.12f, 1f),
                 animationSpec = tween(600),
                 label = "bar$index"
             )
@@ -71,7 +72,7 @@ fun WeeklyStatView(
                         text = labels[index],
                         style = MaterialTheme.typography.labelMedium,
                         color = if (highlighted) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSurfaceVariant
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }

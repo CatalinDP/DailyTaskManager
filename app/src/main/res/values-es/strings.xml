@@ -10,6 +10,7 @@
     <string name="action_complete">Completar</string>
     <string name="action_snooze">Posponer 10 min</string>
     <string name="channel_ongoing_name">Tarea en curso</string>
+    <string name="channel_alerts_name">Avisos de tareas</string>
 
     <!-- Navigation -->
     <string name="navigation_home">Inicio</string>
@@ -27,15 +28,22 @@
     <string name="common_open_settings">Abrir ajustes</string>
     <string name="common_allow">Permitir</string>
     <string name="dialog_icon_description">Icono del diálogo</string>
+    <string name="error_no_app_to_open">No hay ninguna app para abrir esto</string>
 
     <!-- Home -->
     <string name="home_welcome">Bienvenido, %1$s</string>
     <string name="home_upcoming_tasks">Próximas tareas</string>
     <string name="home_see_more">Ver más</string>
     <string name="home_error">Error: %1$s</string>
+    <plurals name="home_streak">
+        <item quantity="one">¡Llevas una racha de %1$d día! Sigue así</item>
+        <item quantity="other">¡Llevas una racha de %1$d días! Sigue así</item>
+    </plurals>
+    <string name="home_streak_start">Completa al menos una tarea hoy para empezar tu racha</string>
 
     <!-- Weather -->
     <string name="weather_error_network">no se pudo cargar el tiempo</string>
+    <string name="weather_error_server">el servicio del tiempo no está disponible</string>
     <string name="weather_error_location_denied">permiso de ubicación denegado</string>
     <string name="weather_today_forecast">Pronóstico de hoy</string>
     <string name="weather_rain_probability">Probabilidad de lluvia: %1$d%%</string>
@@ -67,6 +75,9 @@
     <string name="create_task_time_dialog_title">Selecciona la hora</string>
     <string name="create_task_create_button">Crear tarea</string>
     <string name="create_task_edit_button">Editar tarea</string>
+    <string name="create_task_error_name_empty">El nombre de la tarea no puede estar vacío</string>
+    <string name="create_task_error_no_days">Selecciona al menos un día</string>
+    <string name="create_task_error_time_range">La hora de fin debe ser posterior a la de inicio</string>
 
     <!-- Days -->
     <string name="day_monday">Lunes</string>
@@ -115,4 +126,21 @@
     <string name="onboarding_name_label">Nombre</string>
     <string name="onboarding_create_routine">Crear mi rutina</string>
     <string name="error_name_empty">El nombre no puede estar vacío</string>
+
+    <!-- Stand up -->
+    <string name="standup_title">Hora de levantarse</string>
+    <string name="standup_text">Estira las piernas y camina un momento</string>
+    <string name="channel_standup_name">Recordatorio de levantarse</string>
+    <string name="interval_1h">Cada hora</string>
+    <string name="interval_2h">Cada 2 horas</string>
+    <string name="interval_3h">Cada 3 horas</string>
+    <string name="interval_4h">Cada 4 horas</string>
+    <string name="settings_standup_section">Descansos</string>
+    <string name="settings_standup_title">Levantarse</string>
+    <string name="standup_start_title">Inicio de los avisos</string>
+    <string name="standup_end_title">Fin de los avisos</string>
+    <string name="standup_start_error">El inicio debe ser anterior al fin</string>
+    <string name="standup_end_error">El fin debe ser posterior al inicio</string>
+    <string name="standup_settings_window_selection">Selecciona la\nventana de tiempo</string>
+    <string name="standup_time_error">El inicio debe ser anterior al fin</string>
 </resources>

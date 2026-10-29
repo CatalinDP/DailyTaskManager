@@ -1,6 +1,5 @@
 package com.example.dailytaskmanager.views
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -16,14 +15,12 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,7 +35,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.components.TimeInputComponent
 import com.example.dailytaskmanager.model.Task
-import com.example.dailytaskmanager.notifications.rememberNotificationpermissionRequester
+import com.example.dailytaskmanager.notifications.rememberNotificationPermissionRequester
+import com.example.dailytaskmanager.ui.messageRes
+import com.example.dailytaskmanager.uistate.CreateTaskValidationError
 import com.example.dailytaskmanager.viewmodel.CreateTaskViewModel
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -53,9 +52,11 @@ fun CreateTaskBottomSheet(
     ) {
     var allowFocus by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(task?.id) {
         if (task != null) {
             viewModel.editTask(task)
+        } else {
+            viewModel.resetUiState()
         }
         withFrameNanos {  }
         allowFocus = true
@@ -63,13 +64,17 @@ fun CreateTaskBottomSheet(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    val timePickerState = rememberTimePickerState(is24Hour = true)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.d("COMPLETION", "${state.taskStartTime.hour}")
-    val startTimeState = rememberTimePickerState(initialHour = state.taskStartTime.hour, initialMinute = state.taskStartTime.minute, is24Hour = true)
-    val endTimeState = rememberTimePickerState(initialHour = state.taskEndTime.hour, initialMinute = state.taskEndTime.minute, is24Hour = true)
     val scrollState = rememberScrollState()
-    var showTimeDialog by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<CreateTaskValidationError?>(null) }
+
+    if (task != null && state.taskId != task.id) return
+    val startTimeState = key(state.taskId) {
+        rememberTimePickerState(state.taskStartTime.hour, state.taskStartTime.minute, is24Hour = true)
+    }
+    val endTimeState = key(state.taskId) {
+        rememberTimePickerState(state.taskEndTime.hour, state.taskEndTime.minute, is24Hour = true)
+    }
 
     val closeSheet: (onFinished: () -> Unit) -> Unit = { onFinished ->
         scope.launch { sheetState.hide() }.invokeOnCompletion {
@@ -79,16 +84,14 @@ fun CreateTaskBottomSheet(
         }
     }
 
-    val requestNotificationPermission = rememberNotificationpermissionRequester { _ ->
+    val requestNotificationPermission = rememberNotificationPermissionRequester { _ ->
         viewModel.onEndTimeChange(LocalTime.of(endTimeState.hour, endTimeState.minute))
         viewModel.onStartTimeChange(LocalTime.of(startTimeState.hour, startTimeState.minute))
+        error = null
         if (task == null) {
-            viewModel.saveTask(onSaved = onDismiss)
-            Log.d("COMPLETION", "SAVE")
+            viewModel.saveTask(onSaved = onDismiss, onError = { error = it })
         } else {
-            viewModel.updateTask(onUpdated = { onDismiss()
-                Log.d("COMPLETION", "OnUpdate")})
-            Log.d("COMPLETION", "Edit")
+            viewModel.updateTask(onUpdated = onDismiss, onError = { error = it })
         }
     }
 
@@ -164,36 +167,13 @@ fun CreateTaskBottomSheet(
                     onSelectedDaysChange = viewModel::onDayToggled
                 )
             }
-            TextButton(
-                onClick = {
-                    showTimeDialog = true
-                }
-            ) {
-                Text(text = stringResource(R.string.create_task_select_time))
+            error?.let {
+                Text(
+                    text = stringResource(it.messageRes()),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
-
-            if (showTimeDialog) {
-                TimePickerDialog(
-                    onDismissRequest = { showTimeDialog = false },
-                    title = { Text(stringResource(R.string.create_task_time_dialog_title)) },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            // Acceder a timePickerState.hour y timePickerState.minute
-                            showTimeDialog = false
-                        }) {
-                            Text(stringResource(R.string.common_accept))
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showTimeDialog = false }) {
-                            Text(stringResource(R.string.common_cancel))
-                        }
-                    }
-                ) {
-                    TimePicker(state = timePickerState)
-                }
-            }
-
             Button(
                 onClick = {
                     requestNotificationPermission()

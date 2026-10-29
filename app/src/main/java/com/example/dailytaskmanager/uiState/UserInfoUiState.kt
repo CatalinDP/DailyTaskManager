@@ -1,4 +1,4 @@
-package com.example.dailytaskmanager.uiState
+package com.example.dailytaskmanager.uistate
 
 import java.time.LocalTime
 

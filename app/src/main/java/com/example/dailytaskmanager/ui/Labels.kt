@@ -6,7 +6,8 @@ import com.example.dailytaskmanager.model.Day
 import com.example.dailytaskmanager.model.ErrorReason
 import com.example.dailytaskmanager.model.TempUnit
 import com.example.dailytaskmanager.model.ThemeMode
-import com.example.dailytaskmanager.uiState.UserInfoValidationError
+import com.example.dailytaskmanager.uistate.CreateTaskValidationError
+import com.example.dailytaskmanager.uistate.UserInfoValidationError
 
 @StringRes
 fun ThemeMode.labelRes(): Int = when (this) {
@@ -35,10 +36,18 @@ fun Day.labelRes(): Int = when (this) {
 @StringRes
 fun ErrorReason.messageRes(): Int = when (this) {
     ErrorReason.NETWORK -> R.string.weather_error_network
+    ErrorReason.SERVER -> R.string.weather_error_server
     ErrorReason.LOCATION_DENIED -> R.string.weather_error_location_denied
 }
 
 @StringRes
 fun UserInfoValidationError.messageRes(): Int = when (this) {
     UserInfoValidationError.NAME_EMPTY -> R.string.error_name_empty
+}
+
+@StringRes
+fun CreateTaskValidationError.messageRes(): Int = when (this) {
+    CreateTaskValidationError.NAME_EMPTY -> R.string.create_task_error_name_empty
+    CreateTaskValidationError.NO_DAYS -> R.string.create_task_error_no_days
+    CreateTaskValidationError.END_NOT_AFTER_START -> R.string.create_task_error_time_range
 }

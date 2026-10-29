@@ -36,11 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.dailytaskmanager.components.TimeInputComponent
-import com.example.dailytaskmanager.ui.theme.DailyTaskManagerTheme
+import com.example.dailytaskmanager.ui.messageRes
+import com.example.dailytaskmanager.uistate.UserInfoValidationError
 import com.example.dailytaskmanager.utils.getFormattedCurrentDate
 import com.example.dailytaskmanager.viewmodel.UserViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -54,9 +54,7 @@ fun OnboardingView(
     userViewModel: UserViewModel = koinViewModel(),
 ) {
     val scrollState = rememberScrollState()
-    var timeErrorState by remember { mutableStateOf(false) }
-    var timeErrorText by remember { mutableStateOf("") }
-    val nameEmptyError = stringResource(R.string.error_name_empty)
+    var error by remember { mutableStateOf<UserInfoValidationError?>(null) }
     val state by userViewModel.uiState.collectAsStateWithLifecycle()
     val startTimeState = rememberTimePickerState(initialHour = 8, initialMinute = 0, is24Hour = true)
 
@@ -131,9 +129,9 @@ fun OnboardingView(
                         startTimeState = startTimeState,
                         startText = stringResource(R.string.onboarding_start_time_question),
                     )
-                    if (timeErrorState) {
+                    error?.let {
                         Text(
-                            text = timeErrorText,
+                            text = stringResource(it.messageRes()),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -176,14 +174,10 @@ fun OnboardingView(
                 FilledTonalButton(
                     onClick = {
                         userViewModel.onStartingHourChange(LocalTime.of(startTimeState.hour, startTimeState.minute))
-                        timeErrorState = false
+                        error = null
                         userViewModel.onSaveUserInfo(
-                            onSave = {
-                                onNavigateToHome()
-                            }, onError = {
-                                timeErrorState = true
-                                timeErrorText = nameEmptyError
-                            }
+                            onSave = onNavigateToHome,
+                            onError = { error = it }
                         )
                     },
                     colors = ButtonDefaults.filledTonalButtonColors(

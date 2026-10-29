@@ -10,6 +10,7 @@
     <string name="action_complete">Complete</string>
     <string name="action_snooze">Postpone 10 min</string>
     <string name="channel_ongoing_name">On going task</string>
+    <string name="channel_alerts_name">Task reminder</string>
 
 
     <!-- Navigation -->
@@ -28,20 +29,29 @@
     <string name="common_open_settings">Open settings</string>
     <string name="common_allow">Allow</string>
     <string name="dialog_icon_description">Dialog icon</string>
+    <string name="error_no_app_to_open">No app available to open this</string>
 
     <!-- Home -->
     <string name="home_welcome">Welcome, %1$s</string>
     <string name="home_upcoming_tasks">Upcoming tasks</string>
     <string name="home_see_more">See more</string>
     <string name="home_error">Error: %1$s</string>
+    <plurals name="home_streak">
+        <item quantity="one">You\'re on a %1$d day streak! Keep it up</item>
+        <item quantity="other">You\'re on a %1$d day streak! Keep it up</item>
+    </plurals>
+    <string name="home_streak_start">Complete at least one task today to start your streak</string>
 
     <!-- Weather -->
     <string name="weather_error_network">could not load weather</string>
+    <string name="weather_error_server">weather service unavailable</string>
     <string name="weather_error_location_denied">location permission denied</string>
     <string name="weather_today_forecast">Today\'s forecast</string>
-    <string name="weather_current_temperature" translatable="false">%1$sºC - </string>
+    <string name="weather_current_temperature" translatable="false">%1$sºC</string>
     <string name="weather_rain_probability">Chance of rain: %1$d%%</string>
     <string name="weather_icon_description">Weather icon</string>
+    <string name="weather_max" translatable="false">Max: %1$s %2$s</string>
+    <string name="weather_min" translatable="false">Min: %1$s %2$s</string>
 
     <!-- Tasks -->
     <string name="tasks_add">Add task</string>
@@ -69,6 +79,9 @@
     <string name="create_task_time_dialog_title">Select time</string>
     <string name="create_task_create_button">Create task</string>
     <string name="create_task_edit_button">Edit task</string>
+    <string name="create_task_error_name_empty">Task name cannot be empty</string>
+    <string name="create_task_error_no_days">Select at least one day</string>
+    <string name="create_task_error_time_range">The end time must be after the start time</string>
 
     <!-- Days -->
     <string name="day_monday">Monday</string>
@@ -122,4 +135,22 @@
     <string name="onboarding_name_label">Name</string>
     <string name="onboarding_create_routine">Create my routine</string>
     <string name="error_name_empty">Name cannot be empty</string>
+
+    <!-- Stand up -->
+    <string name="standup_title">Time to get up</string>
+    <string name="standup_text">Extend your legs and walk a bit</string>
+    <string name="channel_standup_name">Get up reminder</string>
+    <string name="interval_1h">Every hour</string>
+    <string name="interval_2h">Every 2 hours</string>
+    <string name="interval_3h">Every 3 hours</string>
+    <string name="interval_4h">Every 4 hours</string>
+    <string name="settings_standup_section">Rests</string>
+    <string name="settings_standup_title">Get up</string>
+    <string name="standup_start_title">Reminders start</string>
+    <string name="standup_end_title">Reminders end</string>
+    <string name="standup_start_error">The start must be before the end</string>
+    <string name="standup_end_error">The end must be after the start</string>
+    <string name="standup_settings_window_selection">Select the\ntime window</string>
+    <string name="standup_time_error">The start must be before the end</string>
+
 </resources>

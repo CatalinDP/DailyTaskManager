@@ -1,15 +1,17 @@
 package com.example.dailytaskmanager.repository
 
-import com.example.dailytaskmanager.model.LeadTime
+import com.example.dailytaskmanager.model.StandUpConfig
 import com.example.dailytaskmanager.model.TempUnit
 import com.example.dailytaskmanager.model.ThemeMode
-import java.time.LocalTime
+import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
-    suspend fun setLeadTime(time: LeadTime)
+    val theme: Flow<ThemeMode>
+    val unit: Flow<TempUnit>
+    val showWeather: Flow<Boolean>
+    val standUpConfig: Flow<StandUpConfig>
     suspend fun setTheme(value: ThemeMode)
     suspend fun setUnit(value: TempUnit)
-    suspend fun setUsername(value: String)
-    suspend fun setStartingTime(value: LocalTime)
     suspend fun showWeatherOnHome(value: Boolean)
+    suspend fun setStandUpConfig(config: StandUpConfig)
 }

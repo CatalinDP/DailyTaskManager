@@ -45,6 +45,7 @@
     <string name="weather_error_network">no se pudo cargar el tiempo</string>
     <string name="weather_error_server">el servicio del tiempo no está disponible</string>
     <string name="weather_error_location_denied">permiso de ubicación denegado</string>
+    <string name="weather_error_location_unavailable">ubicación no disponible, comprueba que la ubicación está activada</string>
     <string name="weather_today_forecast">Pronóstico de hoy</string>
     <string name="weather_rain_probability">Probabilidad de lluvia: %1$d%%</string>
     <string name="weather_icon_description">Icono del tiempo</string>
@@ -66,6 +67,7 @@
 
     <!-- Create task -->
     <string name="create_task_title">Creación de tarea</string>
+    <string name="edit_task_title">Editar tarea</string>
     <string name="create_task_name_title">Nombre de la tarea</string>
     <string name="create_task_name_label">Nombre de tarea</string>
     <string name="create_task_start_time">Inicio de tarea</string>

@@ -4,7 +4,10 @@
 
 [English](README.md)
 
-<!-- TODO: captura principal / banner (pantalla de Inicio en tema claro y oscuro) -->
+<p align="center">
+  <img src="docs/screenshots/home.png" width="260" alt="home">
+  <img src="docs/screenshots/home_dark.png" width="260" alt="home_dark">
+</p>
 
 ---
 
@@ -18,7 +21,11 @@
 - **Edición directa**: toca una tarea para modificarla. Se conservan su historial y su fecha de creación.
 - **Validación**: una tarea necesita un nombre y al menos un día, y tiene que terminar después de empezar.
 
-<!-- TODO: captura de la pantalla de Tareas + hoja de crear/editar -->
+<p align="center">
+  <img src="docs/screenshots/tasks.png" width="260" alt="tasks">
+  <img src="docs/screenshots/task_edit.png" width="260" alt="task_edit">
+  <img src="docs/screenshots/tasks_dark.png" width="260" alt="tasks_dark">
+</p>
 
 ### Recordatorios inteligentes
 - **Notificación a la hora de inicio**: alarmas exactas cuando el sistema lo permite y, si no, alarmas inexactas automáticamente.
@@ -35,7 +42,7 @@
 - **Próximas tareas**: las tres siguientes que aún te quedan hoy.
 - **Tarjeta del tiempo** (opcional): temperatura actual, máxima y mínima del día y probabilidad de lluvia, en °C o °F. Usa [Open-Meteo](https://open-meteo.com/) y no necesita clave de API.
 
-<!-- TODO: captura del panel de Inicio (progreso, gráfico semanal, racha, tiempo) -->
+<!-- TODO: captura del panel de Inicio con la tarjeta del tiempo -->
 
 ### Recordatorios para levantarte
 - Avisos para levantarte y estirarte cada 1, 2, 3 o 4 horas.
@@ -47,8 +54,10 @@
 - **Ajustes**: estado de los permisos de notificaciones, alarmas exactas y ubicación con acceso directo a cada uno, unidad de temperatura, mostrar u ocultar el tiempo y enviar comentarios.
 - **Traducida** al inglés y al español.
 
-<!-- TODO: captura de la pantalla de Ajustes -->
-<!-- TODO: captura de la pantalla de Onboarding -->
+<p align="center">
+  <img src="docs/screenshots/onboarding.png" width="260" alt="onboarding">
+  <img src="docs/screenshots/settings.png" width="260" alt="settings">
+</p>
 
 ---
 

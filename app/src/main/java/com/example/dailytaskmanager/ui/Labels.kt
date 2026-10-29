@@ -38,6 +38,7 @@ fun ErrorReason.messageRes(): Int = when (this) {
     ErrorReason.NETWORK -> R.string.weather_error_network
     ErrorReason.SERVER -> R.string.weather_error_server
     ErrorReason.LOCATION_DENIED -> R.string.weather_error_location_denied
+    ErrorReason.LOCATION_UNAVAILABLE -> R.string.weather_error_location_unavailable
 }
 
 @StringRes

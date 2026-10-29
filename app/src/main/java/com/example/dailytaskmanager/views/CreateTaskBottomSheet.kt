@@ -25,10 +25,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,16 +48,12 @@ fun CreateTaskBottomSheet(
     task: Task? = null,
     viewModel: CreateTaskViewModel = koinViewModel()
     ) {
-    var allowFocus by remember { mutableStateOf(false) }
-
     LaunchedEffect(task?.id) {
         if (task != null) {
             viewModel.editTask(task)
         } else {
             viewModel.resetUiState()
         }
-        withFrameNanos {  }
-        allowFocus = true
     }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -109,10 +103,9 @@ fun CreateTaskBottomSheet(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .verticalScroll(scrollState)
-                .focusProperties { canFocus = allowFocus }
         ) {
             Text(
-                text = stringResource(R.string.create_task_title),
+                text = stringResource(if (task == null) R.string.create_task_title else R.string.edit_task_title),
                 style = MaterialTheme.typography.titleLarge
             )
             Column {

@@ -4,7 +4,10 @@
 
 [Español](README.es.md)
 
-<!-- TODO: hero screenshot / banner (Home screen in light and dark theme) -->
+<p align="center">
+  <img src="docs/screenshots/home.png" width="260" alt="home">
+  <img src="docs/screenshots/home_dark.png" width="260" alt="home_dark">
+</p>
 
 ---
 
@@ -18,7 +21,11 @@
 - **Edit in place**: tap a task to change it. Its history and creation date are kept.
 - **Validation**: a task needs a name and at least one day, and must end after it starts.
 
-<!-- TODO: screenshot of the Tasks screen + create/edit bottom sheet -->
+<p align="center">
+  <img src="docs/screenshots/tasks.png" width="260" alt="tasks">
+  <img src="docs/screenshots/task_edit.png" width="260" alt="task_edit">
+  <img src="docs/screenshots/tasks_dark.png" width="260" alt="tasks_dark">
+</p>
 
 ### Smart reminders
 - **Notifications at start time**: exact alarms when the system allows them, with an automatic fallback to inexact alarms when it doesn't.
@@ -35,7 +42,7 @@
 - **Up next**: the next three tasks still pending today.
 - **Weather card** (optional): current temperature, today's max/min and chance of rain, in °C or °F. Powered by [Open-Meteo](https://open-meteo.com/), with no API key.
 
-<!-- TODO: screenshot of the Home dashboard (progress, weekly chart, streak, weather) -->
+<!-- TODO: screenshot of the Home dashboard with the weather card -->
 
 ### Stand-up reminders
 - Reminders to get up and stretch every 1, 2, 3 or 4 hours.
@@ -47,8 +54,10 @@
 - **Settings hub**: see and open the notification, exact-alarm and location permissions, choose the temperature unit, toggle the weather card, and send feedback.
 - **Localised** in English and Spanish.
 
-<!-- TODO: screenshot of the Settings screen -->
-<!-- TODO: screenshot of the Onboarding screen -->
+<p align="center">
+  <img src="docs/screenshots/onboarding.png" width="260" alt="onboarding">
+  <img src="docs/screenshots/settings.png" width="260" alt="settings">
+</p>
 
 ---
 

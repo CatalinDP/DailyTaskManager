@@ -46,6 +46,7 @@
     <string name="weather_error_network">could not load weather</string>
     <string name="weather_error_server">weather service unavailable</string>
     <string name="weather_error_location_denied">location permission denied</string>
+    <string name="weather_error_location_unavailable">location unavailable, check that location is turned on</string>
     <string name="weather_today_forecast">Today\'s forecast</string>
     <string name="weather_current_temperature" translatable="false">%1$sºC</string>
     <string name="weather_rain_probability">Chance of rain: %1$d%%</string>
@@ -70,6 +71,7 @@
 
     <!-- Create task -->
     <string name="create_task_title">Create task</string>
+    <string name="edit_task_title">Edit task</string>
     <string name="create_task_name_title">Task name</string>
     <string name="create_task_name_label">Task name</string>
     <string name="create_task_start_time">Task start</string>

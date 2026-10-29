@@ -58,7 +58,8 @@ class HomeViewModel(
             _weather.value = WeatherState.Loading
             val location = locationRepository.currentLocation()
             if (location == null) {
-                _weather.value = WeatherState.Error(ErrorReason.LOCATION_DENIED)
+                // The permission was already checked by the UI: null means no fix is available
+                _weather.value = WeatherState.Error(ErrorReason.LOCATION_UNAVAILABLE)
                 return@launch
             }
             weatherRepository.get(location.latitude, location.longitude)

@@ -6,4 +6,4 @@ sealed interface WeatherState {
     data class Error(val reason: ErrorReason) : WeatherState
 }
 
-enum class ErrorReason { NETWORK, SERVER, LOCATION_DENIED }
+enum class ErrorReason { NETWORK, SERVER, LOCATION_DENIED, LOCATION_UNAVAILABLE }

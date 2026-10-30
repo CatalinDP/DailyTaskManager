@@ -44,9 +44,13 @@ import com.example.dailytaskmanager.components.SwipeToDeleteContainer
 import com.example.dailytaskmanager.components.TaskItem
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.components.DaySelector
+import com.example.dailytaskmanager.components.HintBox
+import com.example.dailytaskmanager.model.Hint
+import com.example.dailytaskmanager.model.firstPending
 import com.example.dailytaskmanager.model.Task
 import com.example.dailytaskmanager.utils.getCurrentDayName
 import com.example.dailytaskmanager.utils.getFormattedCurrentDate
+import com.example.dailytaskmanager.viewmodel.SettingsViewModel
 import com.example.dailytaskmanager.viewmodel.TaskViewModel
 import com.example.dailytaskmanager.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
@@ -56,11 +60,17 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun TaskView(
     taskViewModel: TaskViewModel = koinViewModel(),
-    userViewModel: UserViewModel = koinViewModel()
+    userViewModel: UserViewModel = koinViewModel(),
+    settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
     val todayTaskList by taskViewModel.selectedDayTasks.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
     val userName = userViewModel.userName.collectAsStateWithLifecycle()
+    val dismissedHints by settingsViewModel.dismissedHints.collectAsStateWithLifecycle()
+    // Swipe tip only makes sense once there is a task to swipe
+    val pendingHint = Hint.tasks
+        .filter { todayTaskList.isNotEmpty() || it != Hint.TASK_SWIPE_DELETE }
+        .firstPending(dismissedHints)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val taskDeletedMessage = stringResource(R.string.tasks_deleted)
@@ -119,6 +129,11 @@ fun TaskView(
             ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            pendingHint?.let { hint ->
+                item(key = "hint") {
+                    HintBox(hint, onDismiss = { settingsViewModel.dismissHint(it.id) })
+                }
+            }
             if (todayTaskList.isEmpty()) {
                 item {
                     Text(

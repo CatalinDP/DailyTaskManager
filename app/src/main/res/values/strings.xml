@@ -155,4 +155,22 @@
     <string name="standup_settings_window_selection">Select the\ntime window</string>
     <string name="standup_time_error">The start must be before the end</string>
 
+    <string name="hint_dismiss">Dismiss tip</string>
+    <string name="hint_home_stats_title">Your progress at a glance</string>
+    <string name="hint_home_stats_body">The ring shows today\'s completed tasks and the bars show your week. Complete a task every day to build a streak.</string>
+    <string name="hint_home_tap_task_title">Manage your next tasks</string>
+    <string name="hint_home_tap_task_body">Tick the checkbox to complete a task, or tap it to edit it.</string>
+    <string name="hint_task_add_title">Create your first task</string>
+    <string name="hint_task_add_body">Press \"Add task\" at the top right to create a task for any day of the week.</string>
+    <string name="hint_task_day_selector_title">Browse other days</string>
+    <string name="hint_task_day_selector_body">Use the arrows at the bottom to plan tasks for any day of the week.</string>
+    <string name="hint_task_swipe_delete_title">Remove a task</string>
+    <string name="hint_task_swipe_delete_body">Swipe a task to delete it. You can undo right after.</string>
+    <string name="hint_setting_section_title">Hints</string>
+    <string name="hint_setting_reset_hints">Reset hints</string>
+    <string name="hint_setting_reset_confirmation">Hints have been reseted</string>
+    <string name="settings_user_section_title">User settings</string>
+    <string name="setting_change_user_name">Change user name</string>
+    <string name="setting_change_starting_time">Change starting time</string>
+    <string name="settings_starting_time_dialog">Starting time</string>
 </resources>

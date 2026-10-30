@@ -42,6 +42,7 @@ import com.example.dailytaskmanager.components.TimeInputComponent
 import com.example.dailytaskmanager.ui.messageRes
 import com.example.dailytaskmanager.uistate.UserInfoValidationError
 import com.example.dailytaskmanager.utils.getFormattedCurrentDate
+import com.example.dailytaskmanager.utils.outlinedTextFieldColors
 import com.example.dailytaskmanager.viewmodel.UserViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.LocalTime
@@ -155,19 +156,7 @@ fun OnboardingView(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                            focusedContainerColor = MaterialTheme.colorScheme.surface,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary,
-                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            cursorColor = MaterialTheme.colorScheme.primary,
-                            errorTextColor = MaterialTheme.colorScheme.error
-                        ),
+                        colors = outlinedTextFieldColors(),
                         maxLines = 1
                     )
                 }

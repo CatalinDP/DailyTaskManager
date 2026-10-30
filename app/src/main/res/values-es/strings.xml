@@ -145,4 +145,23 @@
     <string name="standup_end_error">El fin debe ser posterior al inicio</string>
     <string name="standup_settings_window_selection">Selecciona la\nventana de tiempo</string>
     <string name="standup_time_error">El inicio debe ser anterior al fin</string>
+    <string name="hint_dismiss">Descartar consejo</string>
+    <string name="hint_home_stats_title">Tu progreso de un vistazo</string>
+    <string name="hint_home_stats_body">El anillo muestra las tareas completadas hoy y las barras tu semana. Completa una tarea cada día para crear una racha.</string>
+    <string name="hint_home_tap_task_title">Gestiona tus próximas tareas</string>
+    <string name="hint_home_tap_task_body">Marca la casilla para completar una tarea o tócala para editarla.</string>
+    <string name="hint_task_add_title">Crea tu primera tarea</string>
+    <string name="hint_task_add_body">Pulsa \"Añadir tarea\" arriba a la derecha para crear una tarea para cualquier día de la semana.</string>
+    <string name="hint_task_day_selector_title">Consulta otros días</string>
+    <string name="hint_task_day_selector_body">Usa las flechas de abajo para planificar tareas de cualquier día de la semana.</string>
+    <string name="hint_task_swipe_delete_title">Elimina una tarea</string>
+    <string name="hint_task_swipe_delete_body">Desliza una tarea para eliminarla. Puedes deshacerlo justo después.</string>
+    <string name="hint_setting_section_title">Consejos</string>
+    <string name="hint_setting_reset_hints">Reiniciar consejos</string>
+    <string name="hint_setting_reset_confirmation">Los consejos han sido reiniciados</string>
+    <string name="settings_user_section_title">User settings</string>
+    <string name="setting_change_user_name">Change user name</string>
+    <string name="setting_change_starting_time">Cambiar hora de inicio</string>
+    <string name="settings_starting_time_dialog">Hora de inicio</string>
+
 </resources>

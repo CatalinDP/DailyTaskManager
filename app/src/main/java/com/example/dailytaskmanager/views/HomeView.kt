@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -39,7 +40,10 @@ import com.example.dailytaskmanager.components.WeatherSkeleton
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.components.SuggestionBox
 import com.example.dailytaskmanager.components.WeeklyStatView
+import com.example.dailytaskmanager.components.HintBox
+import com.example.dailytaskmanager.model.Hint
 import com.example.dailytaskmanager.model.Task
+import com.example.dailytaskmanager.model.firstPending
 import com.example.dailytaskmanager.model.WeatherState
 import com.example.dailytaskmanager.ui.messageRes
 import com.example.dailytaskmanager.utils.getCurrentDayNumber
@@ -61,9 +65,14 @@ fun HomeView(
     onSeeMoreTasksTap: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val dismissedHints by settingsViewModel.dismissedHints.collectAsStateWithLifecycle()
     val userName = userViewModel.userName.collectAsStateWithLifecycle()
     val weather by homeViewModel.weather.collectAsStateWithLifecycle()
     val tasks = homeViewModel.nextTasks.collectAsStateWithLifecycle()
+    // The task tip only makes sense when there is a task to interact with
+    val pendingHint = Hint.home
+        .filter { tasks.value.isNotEmpty() || it != Hint.HOME_TAP_TASK }
+        .firstPending(dismissedHints)
     val todayTasks = homeViewModel.todayTasks.collectAsStateWithLifecycle()
     val showWeather = settingsViewModel.showWeather.collectAsStateWithLifecycle()
     val completedIds = taskViewModel.completedIds.collectAsStateWithLifecycle()
@@ -107,18 +116,15 @@ fun HomeView(
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(
-                    PaddingValues(
-                        top = innerPadding.calculateTopPadding(),
-                        bottom = 124.dp,
-                        start = 24.dp,
-                        end = 24.dp
-                    )
-                )
+                .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                // Applied after verticalScroll so it acts as content padding: the scroll
+                // viewport stays full-size and card shadows aren't clipped at its edges.
+                .padding(PaddingValues(start = 24.dp, end = 24.dp, bottom = 124.dp)),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            pendingHint?.let { HintBox(it, onDismiss = { hint -> settingsViewModel.dismissHint(hint.id) }) }
             TaskCompletionStat(tasks = todayTasks.value, completedIds = completedIds.value)
             WeeklyStatView(
                 values = weekProgression.value,
@@ -133,12 +139,12 @@ fun HomeView(
                 when (val state = weather) {
                     WeatherState.Loading -> WeatherSkeleton()
                     is WeatherState.Success -> WeatherComponent(weather = state.data, tempUnit.value)
-                    is WeatherState.Error -> Text(
-                        text = stringResource(
-                            R.string.home_error,
-                            stringResource(state.reason.messageRes())
+                    is WeatherState.Error -> SuggestionBox(
+                        title = stringResource(R.string.home_error, stringResource(state.reason.messageRes())),
+                        icon = Icons.Outlined.Error,
+                        backColor = MaterialTheme.colorScheme.errorContainer,
+                        titleColor = MaterialTheme.colorScheme.onErrorContainer
                         )
-                    )
                 }
             }
             Row(

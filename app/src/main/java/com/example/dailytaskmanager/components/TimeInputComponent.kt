@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.example.dailytaskmanager.utils.appTimePickerColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,16 +72,3 @@ fun TimeInputComponent(
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun appTimePickerColors() = TimePickerDefaults.colors(
-    clockDialColor = MaterialTheme.colorScheme.surfaceVariant,
-    clockDialSelectedContentColor = MaterialTheme.colorScheme.onPrimary,
-    clockDialUnselectedContentColor = MaterialTheme.colorScheme.onSurface,
-    selectorColor = MaterialTheme.colorScheme.primary,
-    timeSelectorSelectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-    timeSelectorUnselectedContainerColor = MaterialTheme.colorScheme.surface,
-    timeSelectorSelectedContentColor = MaterialTheme.colorScheme.primary,
-    timeSelectorUnselectedContentColor = MaterialTheme.colorScheme.onSurface,
-)

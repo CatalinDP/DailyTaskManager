@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.dailytaskmanager.model.StandUpConfig
 import com.example.dailytaskmanager.model.StandUpInterval
@@ -29,6 +30,7 @@ class SettingsRepositoryImpl(private val context: Context): SettingsRepository {
         val STAND_INTERVAL = stringPreferencesKey("stand_up_interval")
         val STAND_START = intPreferencesKey("stand_up_start")
         val STAND_END = intPreferencesKey("stand_up_end")
+        val DISMISSED_HINTS = stringSetPreferencesKey("dismissed_hints")
     }
 
     // A read failure falls back to defaults instead of crashing every collector (splash included)
@@ -39,6 +41,10 @@ class SettingsRepositoryImpl(private val context: Context): SettingsRepository {
         } else {
             throw e
         }
+    }
+
+    override val dismissedHints: Flow<Set<String>> = prefs.map { prefs ->
+        prefs[Keys.DISMISSED_HINTS] ?: emptySet()
     }
 
     override val theme: Flow<ThemeMode> = prefs.map { prefs ->
@@ -78,7 +84,15 @@ class SettingsRepositoryImpl(private val context: Context): SettingsRepository {
         }
     }
 
+    override suspend fun dismissHint(id: String) {
+        context.dataStore.edit { it[Keys.DISMISSED_HINTS] = (it[Keys.DISMISSED_HINTS] ?: emptySet()) + id }
+    }
+
+    override suspend fun resetHints() {
+        context.dataStore.edit { it[Keys.DISMISSED_HINTS] = emptySet()}
+    }
+
     override suspend fun showWeatherOnHome(value: Boolean) {
-       context.dataStore.edit { it[Keys.WEATHER] = value }
+       context.dataStore.edit { it.remove(Keys.WEATHER) }
     }
 }

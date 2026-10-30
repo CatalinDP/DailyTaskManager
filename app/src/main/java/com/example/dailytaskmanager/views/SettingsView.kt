@@ -24,6 +24,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -34,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +55,11 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.dailytaskmanager.R
 import com.example.dailytaskmanager.components.AppTopBar
+import com.example.dailytaskmanager.components.BigDoubleLineSection
 import com.example.dailytaskmanager.components.OptionDialog
-import com.example.dailytaskmanager.components.TimeInputComponent
+import com.example.dailytaskmanager.components.SingleLineSettingButtonSection
+import com.example.dailytaskmanager.components.TextFieldDialog
+import com.example.dailytaskmanager.components.TimeInputDialog
 import com.example.dailytaskmanager.model.StandUpInterval
 import com.example.dailytaskmanager.model.TempUnit
 import com.example.dailytaskmanager.model.ThemeMode
@@ -62,6 +71,7 @@ import com.example.dailytaskmanager.utils.openExactAlarmSettings
 import com.example.dailytaskmanager.utils.openNotificationSettings
 import com.example.dailytaskmanager.utils.sendFeedback
 import com.example.dailytaskmanager.viewmodel.SettingsViewModel
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.LocalTime
 
@@ -72,12 +82,16 @@ fun SettingsView(
     settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
+
     var notificationsOn by remember { mutableStateOf(false) }
     var exactAlarmsOn by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showUnitDialog by remember { mutableStateOf(false) }
     var showStandUpIntervalDialog by remember { mutableStateOf(false) }
     var showStandUpTimeDialog by remember { mutableStateOf(false) }
+    var showUserNameDialog by remember { mutableStateOf(false) }
+    var showUserStartingTimeDialog by remember { mutableStateOf(false) }
+
     val enabledText = stringResource(R.string.common_enabled)
     val disabledText = stringResource(R.string.common_disabled)
     val notificationsText = if (notificationsOn) enabledText else disabledText
@@ -88,10 +102,15 @@ fun SettingsView(
     val showWeather = settingsViewModel.showWeather.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
     val standUpConfig = settingsViewModel.standUp.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val user = settingsViewModel.user.collectAsStateWithLifecycle()
 
     val config = standUpConfig.value
     val standUpStartState = key(config) { rememberTimePickerState(config.start.hour, config.start.minute, is24Hour = true) }
     val standUpEndState = key(config) { rememberTimePickerState(config.end.hour, config.end.minute, is24Hour = true) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackText = stringResource(R.string.hint_setting_reset_confirmation)
+
 
     fun isTimeWindowValid(): Boolean {
         return LocalTime.of(standUpStartState.hour, standUpStartState.minute)
@@ -110,6 +129,12 @@ fun SettingsView(
             AppTopBar(
                 title = stringResource(R.string.settings_title),
                 onBackButton = {}
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(bottom = 88.dp)
             )
         }
     ) { innerPadding ->
@@ -135,11 +160,6 @@ fun SettingsView(
                 ) {
                     context.openExactAlarmSettings()
                 }
-                //SettingDivider()
-                /*SingleLineSettingButtonSection( TODO Implement lead notifications
-                    label = stringResource(R.string.settings_lead_time),
-                    settingState = stringResource(R.string.settings_lead_time_exact),
-                ) {}*/
             }
             SectionTitle(stringResource(R.string.settings_location_section))
             CardSettingContainer {
@@ -159,8 +179,8 @@ fun SettingsView(
             }
             SectionTitle(stringResource(R.string.settings_standup_section))
             CardSettingContainer {
-                BigDoubleLineSection(
-                    title = stringResource(R.string.settings_standup_title),
+                SingleLineSettingButtonSection(
+                    label = stringResource(R.string.settings_standup_title),
                     settingState = stringResource(standUpConfig.value.interval.labelRes),
                 ) {
                     showStandUpIntervalDialog = true
@@ -184,6 +204,37 @@ fun SettingsView(
                     label = stringResource(R.string.settings_units),
                     settingState = stringResource(unit.value.labelRes())
                 ) { showUnitDialog = true }
+            }
+            SectionTitle(stringResource(R.string.settings_user_section_title))
+            CardSettingContainer {
+                SingleLineSettingButtonSection(
+                    label = stringResource(R.string.setting_change_user_name),
+                    settingState = user.value?.name ?: ""
+                ) {
+                    showUserNameDialog = true
+                }
+                SettingDivider()
+                SingleLineSettingButtonSection(
+                    label = stringResource(R.string.setting_change_starting_time),
+                    settingState = user.value?.startingTime.toString()
+                ) {
+                    showUserStartingTimeDialog = true
+                }
+            }
+            SectionTitle(stringResource(R.string.hint_setting_section_title))
+            CardSettingContainer {
+                SingleLineSettingButtonSection(
+                    label = stringResource(R.string.hint_setting_reset_hints),
+                ) {
+                    settingsViewModel.resetHints()
+                    scope.launch {
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                        snackbarHostState.showSnackbar(
+                            message = snackText,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
             }
             SectionTitle(stringResource(R.string.settings_about_section))
             CardSettingContainer {
@@ -227,55 +278,53 @@ fun SettingsView(
                     onDismiss = { showStandUpIntervalDialog = false }
                 )
             }
-            if (showStandUpTimeDialog) {
-                BasicAlertDialog(
-                    onDismissRequest = { showStandUpTimeDialog = false },
+            if (showUserNameDialog) {
+                TextFieldDialog(
+                    title = stringResource(R.string.setting_change_user_name),
+                    label = stringResource(R.string.onboarding_name_label),
+                    initialText = user.value?.name.orEmpty(),
+                    onDismiss = { showUserNameDialog = false }
                 ) {
-                    Box(
-                      modifier = Modifier
-                          .clip(RoundedCornerShape(12.dp))
-                          .background(MaterialTheme.colorScheme.primaryContainer.copy(0.6f))
-                          .padding(24.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            TimeInputComponent(
-                                showEndTime = true,
-                                startTimeState = standUpStartState,
-                                endTimeState = standUpEndState,
-                                startText = stringResource(R.string.standup_start_title),
-                                endText = stringResource(R.string.standup_end_title)
-                            )
-                            TextButton(onClick = {
-                                if (isTimeWindowValid()) {
-                                    settingsViewModel.setStandUpWindow(
-                                        LocalTime.of(
-                                            standUpStartState.hour,
-                                            standUpStartState.minute
-                                        ), LocalTime.of(standUpEndState.hour, standUpEndState.minute)
-                                    )
-                                    showStandUpTimeDialog = false
-                                }
-                            }
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.common_confirm),
-                                            style = MaterialTheme.typography.labelLarge,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                    }
-                            if (!isTimeWindowValid()) {
-                                Text(
-                                    text = stringResource(R.string.standup_time_error),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        }
-                    }
+                    settingsViewModel.changeUserName(it)
+                    showUserNameDialog = false
                 }
+            }
+            if (showUserStartingTimeDialog) {
+                val startingTimeState = rememberTimePickerState(
+                    initialHour = (user.value?.startingTime ?: LocalTime.of(8, 0)).hour,
+                    initialMinute = (user.value?.startingTime ?: LocalTime.of(8, 0)).minute,
+                    is24Hour = true
+                )
+                TimeInputDialog(
+                    title = stringResource(R.string.setting_change_starting_time),
+                    startState = startingTimeState,
+                    startText = stringResource(R.string.settings_starting_time_dialog),
+                    onConfirm = {
+                        settingsViewModel.changeStartingTime(
+                            LocalTime.of(startingTimeState.hour, startingTimeState.minute)
+                        )
+                        showUserStartingTimeDialog = false
+                    },
+                    onDismiss = { showUserStartingTimeDialog = false }
+                )
+            }
+            if (showStandUpTimeDialog) {
+                TimeInputDialog(
+                    title = stringResource(R.string.settings_standup_title),
+                    startState = standUpStartState,
+                    startText = stringResource(R.string.standup_start_title),
+                    endState = standUpEndState,
+                    endText = stringResource(R.string.standup_end_title),
+                    errorText = if (isTimeWindowValid()) null else stringResource(R.string.standup_time_error),
+                    onConfirm = {
+                        settingsViewModel.setStandUpWindow(
+                            LocalTime.of(standUpStartState.hour, standUpStartState.minute),
+                            LocalTime.of(standUpEndState.hour, standUpEndState.minute)
+                        )
+                        showStandUpTimeDialog = false
+                    },
+                    onDismiss = { showStandUpTimeDialog = false }
+                )
             }
         }
     }
@@ -312,47 +361,6 @@ fun SettingDivider() {
         color = MaterialTheme.colorScheme.outlineVariant,
         modifier = Modifier.padding(horizontal = 12.dp)
     )
-}
-
-@Composable
-fun BigDoubleLineSection(
-    title: String,
-    settingState: String,
-    onClick: () -> Unit
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(0.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 12.dp, end = 4.dp, top = 12.dp, bottom = 0.dp)
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-        )
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = settingState,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
-            TextButton(
-                onClick = onClick,
-                modifier = Modifier.height(32.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.common_open_settings),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-    }
 }
 
 @Composable
@@ -405,42 +413,3 @@ fun VersionSection() {
     }
 }
 
-@Composable
-fun SingleLineSettingButtonSection(
-    label: String,
-    settingState: String = "",
-    height: Dp = 56.dp,
-    onClick: () -> Unit,
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height)
-            .padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 12.dp)
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.titleMedium,
-            overflow = TextOverflow.Ellipsis
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable(onClick = onClick),
-        ) {
-            if (!settingState.isEmpty()) {
-                Text(
-                    text = settingState,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
-            }
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.ArrowRight,
-                contentDescription = stringResource(R.string.settings_open_setting_description)
-            )
-        }
-    }
-}

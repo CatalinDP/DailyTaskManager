@@ -62,7 +62,7 @@ val appModule = module {
     single { TaskReminderUseCase(get(), get()) }
     single<LocationRepository> { LocationRepositoryImpl(androidContext()) }
 
-    viewModel { SettingsViewModel(get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { TaskViewModel(get(), get()) }
     viewModel { UserViewModel(get()) }
     viewModel { CreateTaskViewModel(get(), get()) }
